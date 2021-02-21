@@ -13,14 +13,13 @@ import java.util.List;
 
 public class LauncherExecutor implements ApplicationExecutor {
 
-    private final StartupPane startupPane;
     private final String runtimeExecutableFilePath;
     private final String launcherExecutableFilePath;
 
     public LauncherExecutor(@NotNull Frame frame, @NotNull String runtimeExecutableFilePath, @NotNull String launcherExecutableFilePath) {
         this.runtimeExecutableFilePath = runtimeExecutableFilePath;
         this.launcherExecutableFilePath = launcherExecutableFilePath;
-        frame.setPane(this.startupPane = new StartupPane());
+        frame.setPane(new StartupPane());
     }
 
     @Override

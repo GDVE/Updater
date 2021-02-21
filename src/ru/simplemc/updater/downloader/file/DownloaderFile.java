@@ -29,6 +29,10 @@ public class DownloaderFile {
     }
 
     public String getUrl() {
+
+        if (url.endsWith(".jar") || url.endsWith(".exe"))
+            return url + "?" + System.currentTimeMillis();
+
         return url;
     }
 

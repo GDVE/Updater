@@ -34,7 +34,7 @@ public class StartupPane extends JPanel {
     }
 
     public void setStatusAndDescription(String statusValue, String descriptionValue) {
-        status = statusValue;
+        status = statusValue.toUpperCase();
         description = descriptionValue;
         repaint();
     }

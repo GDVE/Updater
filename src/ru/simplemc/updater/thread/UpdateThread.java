@@ -21,10 +21,12 @@ import java.util.concurrent.atomic.AtomicReference;
 public class UpdateThread extends Thread {
 
     private final Frame frame;
+    private final UpdaterExecutor updaterExecutor;
 
     public UpdateThread(Frame frame) {
         this.setName("Updater Thread");
         this.frame = frame;
+        this.updaterExecutor = UpdaterExecutor.init(frame);
     }
 
     @Override
@@ -58,10 +60,24 @@ public class UpdateThread extends Thread {
             DownloaderFile downloaderFile = key.equals("runtime") ? new DownloaderRuntimeArchiveFile((JSONObject) value) : new DownloaderFile((JSONObject) value);
 
             if (downloaderFile.isInvalid()) {
+
                 try {
                     new Downloader(frame, downloaderFile).process();
                 } catch (IOException e) {
                     MessageUtils.printFullStackTraceWithExit("Не удалось загрузить файл " + downloaderFile.getPath().getFileName().toString(), e);
+                }
+
+                if (downloaderFile.getUrl().contains("Updater.")) {
+
+                    updaterExecutor.repaintFrame();
+
+                    try {
+                        updaterExecutor.execute();
+                    } catch (IOException e) {
+                        MessageUtils.printFullStackTraceWithExit("Не удалось перезапустить программу!", e);
+                    }
+
+                    return;
                 }
             }
 
@@ -71,14 +87,6 @@ public class UpdateThread extends Thread {
 
             if (downloaderFile.getUrl().contains("Launcher.")) {
                 launcherExecutableFilePath.set(downloaderFile.getPath());
-            }
-
-            if (downloaderFile.getUrl().contains("Updater.")) {
-                try {
-                    new UpdaterExecutor().execute();
-                } catch (IOException e) {
-                    MessageUtils.printFullStackTraceWithExit("Не удалось перезапустить программу!", e);
-                }
             }
         });
 
