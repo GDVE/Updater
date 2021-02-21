@@ -6,13 +6,11 @@ import org.json.simple.parser.ParseException;
 import ru.simplemc.updater.core.Downloader;
 import ru.simplemc.updater.core.RuntimeInstaller;
 import ru.simplemc.updater.data.json.JSONFile;
-import ru.simplemc.updater.ui.Frame;
+import ru.simplemc.updater.gui.Frame;
 import ru.simplemc.updater.util.MessageUtil;
-import ru.simplemc.updater.util.PathUtil;
 import ru.simplemc.updater.util.SystemUtil;
 
 import java.io.*;
-import java.security.NoSuchAlgorithmException;
 
 public class RuntimeUpdater {
 

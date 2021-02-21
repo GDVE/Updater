@@ -1,8 +1,8 @@
 package ru.simplemc.updater.core;
 
 import ru.simplemc.updater.core.updaters.RuntimeUpdater;
-import ru.simplemc.updater.ui.Frame;
-import ru.simplemc.updater.ui.pane.StartupPane;
+import ru.simplemc.updater.gui.Frame;
+import ru.simplemc.updater.gui.pane.StartupPane;
 import ru.simplemc.updater.util.MessageUtil;
 import ru.simplemc.updater.util.SystemUtil;
 

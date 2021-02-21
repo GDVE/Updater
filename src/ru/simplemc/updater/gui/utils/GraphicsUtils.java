@@ -1,12 +1,14 @@
-package ru.simplemc.updater.util;
+package ru.simplemc.updater.gui.utils;
 
 import ru.simplemc.updater.Settings;
+import ru.simplemc.updater.util.ResourceUtil;
+import ru.simplemc.updater.util.SystemUtil;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class GraphicsUtil {
+public class GraphicsUtils {
 
     public static void drawString(Graphics2D graphics2D, float fontSize, String fontName, String color, String text, int x, int y) {
 

@@ -19,7 +19,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package ru.simplemc.updater.ui.border;
+package ru.simplemc.updater.gui.border;
 
 import javax.swing.border.Border;
 import java.awt.*;

@@ -2,7 +2,7 @@ package ru.simplemc.updater.core.updaters;
 
 import ru.simplemc.updater.core.Downloader;
 import ru.simplemc.updater.data.json.JSONFile;
-import ru.simplemc.updater.ui.Frame;
+import ru.simplemc.updater.gui.Frame;
 import ru.simplemc.updater.util.CryptUtil;
 import ru.simplemc.updater.util.MessageUtil;
 import ru.simplemc.updater.util.PathUtil;
@@ -10,7 +10,6 @@ import ru.simplemc.updater.util.SystemUtil;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 

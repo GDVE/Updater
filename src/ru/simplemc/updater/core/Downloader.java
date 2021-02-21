@@ -1,15 +1,13 @@
 package ru.simplemc.updater.core;
 
 import ru.simplemc.updater.data.json.JSONFile;
-import ru.simplemc.updater.ui.Frame;
-import ru.simplemc.updater.ui.ProgressBar;
-import ru.simplemc.updater.ui.pane.DownloaderPane;
+import ru.simplemc.updater.gui.Frame;
+import ru.simplemc.updater.gui.ProgressBar;
+import ru.simplemc.updater.gui.pane.DownloaderPane;
 import ru.simplemc.updater.util.MessageUtil;
 
 import java.io.*;
 import java.net.URL;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 public class Downloader {
 

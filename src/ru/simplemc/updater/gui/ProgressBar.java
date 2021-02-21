@@ -1,9 +1,8 @@
-package ru.simplemc.updater.ui;
+package ru.simplemc.updater.gui;
 
 import ru.simplemc.updater.Settings;
 import ru.simplemc.updater.util.ResourceUtil;
 import ru.simplemc.updater.util.SystemUtil;
-import ru.simplemc.updater.util.enums.FontFamily;
 
 import javax.swing.*;
 import java.awt.*;

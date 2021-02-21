@@ -10,6 +10,6 @@ public class Settings {
     public static final int FRAME_SHADOW_SIZE = 5;
     public static final String FRAME_TITLE = "SimpleMinecraft.Ru - Updater";
 
-    public static String BACKGROUND_IMAGE = "winter";
+    public static String BACKGROUND_IMAGE = "spring";
 
 }
