@@ -1,6 +1,5 @@
 package ru.simplemc.updater.utils;
 
-import com.sun.istack.internal.NotNull;
 import ru.simplemc.updater.Settings;
 import ru.simplemc.updater.Updater;
 import ru.simplemc.updater.gui.utils.MessageUtils;
@@ -68,7 +67,7 @@ public class ProgramUtils {
         try {
             return Paths.get(Updater.class.getProtectionDomain().getCodeSource().getLocation().toURI());
         } catch (URISyntaxException e) {
-            MessageUtils.printFullStackTrace("Не удалось определить расположение исполняемого файла лаунчера", e);
+            MessageUtils.printFullStackTraceWithExit("Не удалось определить расположение исполняемого файла лаунчера", e);
             haltProgram();
         }
 
@@ -111,7 +110,7 @@ public class ProgramUtils {
                 Files.createDirectory(path);
 
         } catch (IOException e) {
-            MessageUtils.printFullStackTrace("Не удалось создать рабочую директорию лаунчера", e);
+            MessageUtils.printFullStackTraceWithExit("Не удалось создать рабочую директорию лаунчера", e);
             haltProgram();
         }
 

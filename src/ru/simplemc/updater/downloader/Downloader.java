@@ -1,5 +1,7 @@
 package ru.simplemc.updater.downloader;
 
+import ru.simplemc.updater.downloader.file.DownloaderRuntimeArchiveFile;
+import ru.simplemc.updater.downloader.file.DownloaderFile;
 import ru.simplemc.updater.gui.Frame;
 import ru.simplemc.updater.gui.ProgressBar;
 import ru.simplemc.updater.gui.pane.DownloaderPane;
@@ -9,32 +11,25 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.file.Files;
 
 public class Downloader {
 
-    private final Frame frame;
     private final DownloaderFile downloaderFile;
     private final DownloaderPane downloaderPane;
     private final ProgressBar progressBar;
 
     public Downloader(Frame frame, DownloaderFile downloaderFile) {
-        this.frame = frame;
         this.downloaderFile = downloaderFile;
         this.downloaderPane = new DownloaderPane();
         this.progressBar = this.downloaderPane.getProgressBar();
-        this.frame.setPane(this.downloaderPane);
+        this.downloaderPane.setStatusAndDescription("Проверка файла", this.downloaderFile.getPath().getFileName().toString());
+        frame.setPane(this.downloaderPane);
     }
 
     public void process() throws IOException {
 
         this.progressBar.setVisible(true);
-
-        if (!Files.exists(downloaderFile.getPath())) {
-            Files.createDirectories(downloaderFile.getPath());
-        } else {
-            Files.deleteIfExists(downloaderFile.getPath());
-        }
+        this.downloaderFile.prepareBeforeDownload();
 
         InputStream inputStream = new BufferedInputStream(new URL(downloaderFile.getUrl()).openStream());
         FileOutputStream fileOutputStream = new FileOutputStream(downloaderFile.getPath().toFile());
@@ -49,6 +44,12 @@ public class Downloader {
 
         inputStream.close();
         fileOutputStream.close();
+
         this.progressBar.setVisible(false);
+
+        if (downloaderFile instanceof DownloaderRuntimeArchiveFile) {
+            downloaderPane.setStatusAndDescription("Распаковка архива", downloaderFile.getPath().getFileName().toString());
+            ((DownloaderRuntimeArchiveFile) downloaderFile).unpack();
+        }
     }
 }

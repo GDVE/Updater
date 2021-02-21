@@ -1,9 +1,7 @@
 package ru.simplemc.updater.gui.pane;
 
-import ru.simplemc.updater.Settings;
 import ru.simplemc.updater.gui.ProgressBar;
 import ru.simplemc.updater.gui.utils.GraphicsUtils;
-import ru.simplemc.updater.utils.ResourcesUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,20 +13,8 @@ public class DownloaderPane extends JPanel {
     private String description;
 
     public DownloaderPane() {
-
         setStatusAndDescription("", "");
-
-        ImageIcon imageIcon = ResourcesUtils.getImageIcon("animations/download.gif");
-        JLabel loadingIconLabel = new JLabel();
-        loadingIconLabel.setIcon(imageIcon);
-        loadingIconLabel.setBounds(Settings.FRAME_WIDTH / 2 - imageIcon.getIconWidth() / 2, 64, 64, 64);
-        imageIcon.setImageObserver(loadingIconLabel);
-
-        add(loadingIconLabel);
-
-        progressBar = new ProgressBar(8);
-
-        add(progressBar);
+        add(progressBar = new ProgressBar(8));
     }
 
     @Override
@@ -40,8 +26,9 @@ public class DownloaderPane extends JPanel {
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         GraphicsUtils.drawBackground(graphics2D, this);
-        GraphicsUtils.drawString(graphics2D, 22, "FSElliotPro", "ffffff", status, 40, 180);
-        GraphicsUtils.drawString(graphics2D, 14, "FSElliotPro-Bold", "e7e7e6", description, 40, 204);
+
+        GraphicsUtils.drawString(graphics2D, 23, "FSElliotPro-Heavy", "ffffff", status, 40, progressBar.isVisible() ? 68 : 76);
+        GraphicsUtils.drawString(graphics2D, 16, "FSElliotPro", "e7e7e6", description, 40, progressBar.isVisible() ? 92 : 102);
     }
 
     public ProgressBar getProgressBar() {

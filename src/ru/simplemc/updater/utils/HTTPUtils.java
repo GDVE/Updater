@@ -2,6 +2,7 @@ package ru.simplemc.updater.utils;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -40,7 +41,12 @@ public class HTTPUtils {
         connectionInputStream.close();
         bufferedReader.close();
 
-        return (JSONObject) new JSONParser().parse(stringBuffer.toString());
+        try {
+            return (JSONObject) new JSONParser().parse(stringBuffer.toString());
+        } catch (ParseException e) {
+            e.setUnexpectedObject(stringBuffer.toString());
+            throw e;
+        }
     }
 
     /**

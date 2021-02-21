@@ -42,11 +42,11 @@ public class MessageUtils {
         JOptionPane.showMessageDialog(null, message, title, JOptionPane.INFORMATION_MESSAGE);
     }
 
-    public static void printFullStackTrace(String message, Throwable throwable) {
-        printFullStackTrace(message, throwable, false);
+    public static void printFullStackTraceWithExit(String message, Throwable throwable) {
+        printFullStackTraceWithExit(message, throwable, true);
     }
 
-    public static void printFullStackTrace(String message, Throwable throwable, boolean needExit) {
+    public static void printFullStackTraceWithExit(String message, Throwable throwable, boolean needExit) {
 
         Thread thread = Thread.currentThread();
 
