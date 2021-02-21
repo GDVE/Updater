@@ -1,4 +1,4 @@
-package ru.simplemc.updater.util;
+package ru.simplemc.updater.utils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ResourceUtil {
+public class ResourcesUtils {
 
     private static final Map<String, BufferedImage> bufferedImagesCache = new HashMap<>();
     private static final Map<String, ImageIcon> iconImagesCache = new HashMap<>();
@@ -22,7 +22,7 @@ public class ResourceUtil {
 
             font = FONTS_LOADED.getOrDefault(
                     fontName,
-                    Font.createFont(0, ResourceUtil.class.getResourceAsStream("/assets/fonts/" + fontName + ".ttf")))
+                    Font.createFont(0, ResourcesUtils.class.getResourceAsStream("/assets/fonts/" + fontName + ".ttf")))
                     .deriveFont(size);
 
         } catch (FontFormatException | IOException e) {
@@ -46,7 +46,7 @@ public class ResourceUtil {
             ImageIcon imageIcon = new ImageIcon(new BufferedImage(1, 1, 2));
 
             try {
-                imageIcon = new ImageIcon(ResourceUtil.class.getResource(path));
+                imageIcon = new ImageIcon(ResourcesUtils.class.getResource(path));
             } catch (Exception e) {
                 System.out.println("Неудалось загрузить иконку:");
                 e.printStackTrace();
@@ -68,7 +68,7 @@ public class ResourceUtil {
             BufferedImage bufferedImage = new BufferedImage(1, 1, 2);
 
             try {
-                bufferedImage = ImageIO.read(ResourceUtil.class.getResource(path));
+                bufferedImage = ImageIO.read(ResourcesUtils.class.getResource(path));
             } catch (Exception e) {
                 System.out.println("Неудалось загрузить изображение:");
                 e.printStackTrace();

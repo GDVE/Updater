@@ -1,10 +1,11 @@
 package ru.simplemc.updater.gui;
 
 import ru.simplemc.updater.Settings;
-import ru.simplemc.updater.data.Config;
+import ru.simplemc.updater.config.Config;
 import ru.simplemc.updater.gui.border.DropShadowBorder;
-import ru.simplemc.updater.util.ResourceUtil;
-import ru.simplemc.updater.util.SystemUtil;
+import ru.simplemc.updater.utils.OSUtils;
+import ru.simplemc.updater.utils.ResourcesUtils;
+import ru.simplemc.updater.utils.ProgramUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,8 +13,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
+import java.io.IOException;
 import java.lang.reflect.Field;
-import java.nio.charset.Charset;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 
 import static ru.simplemc.updater.Settings.BACKGROUND_IMAGE;
@@ -25,7 +27,7 @@ public class Frame extends JFrame {
     private final JLabel exitButton;
     private final JLabel minimizeButton;
 
-    public Frame(String title) {
+    public Frame() {
 
         try {
 
@@ -38,11 +40,11 @@ public class Frame extends JFrame {
         }
 
         setupBackgroundImage();
-        setTitle(title);
-        setName(title);
+        setTitle(Settings.FRAME_TITLE);
+        setName(Settings.FRAME_TITLE);
         setUndecorated(true);
 
-        if (SystemUtil.isUnix())
+        if (OSUtils.isLinux())
             setBackground(new Color(0, 0, 0, 255));
         else
             setBackground(new Color(0, 0, 0, 0));
@@ -50,7 +52,7 @@ public class Frame extends JFrame {
         setOpacity(1);
         setResizable(false);
 
-        if (SystemUtil.isUnix()) {
+        if (OSUtils.isLinux()) {
             setPreferredSize(new Dimension(Settings.FRAME_WIDTH - Settings.FRAME_SHADOW_SIZE * 2, Settings.FRAME_HEIGHT - Settings.FRAME_SHADOW_SIZE * 2));
         } else
             setPreferredSize(new Dimension(Settings.FRAME_WIDTH, Settings.FRAME_HEIGHT));
@@ -60,7 +62,7 @@ public class Frame extends JFrame {
 
         setLocationRelativeTo(null);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setIconImage(ResourceUtil.getBufferedImage("icon.png"));
+        setIconImage(ResourcesUtils.getBufferedImage("icon.png"));
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -87,13 +89,18 @@ public class Frame extends JFrame {
         minimizeButton = createSystemButton("minimize", this);
     }
 
+    /**
+     * Устанавливает и отрисовывает главную панель программы
+     *
+     * @param container - контейнер для установки в качестве главной панели
+     */
     public void setPane(Container container) {
 
         JPanel pane = (JPanel) container;
         pane.add(exitButton);
         pane.add(minimizeButton);
 
-        if (!SystemUtil.isUnix())
+        if (!OSUtils.isLinux())
             pane.setBorder(new DropShadowBorder(new Color(0, 0, 0, 0), 5, Settings.FRAME_SHADOW_SIZE, 0.15F, 5, true, true, true, true));
 
         pane.setOpaque(false);
@@ -117,12 +124,12 @@ public class Frame extends JFrame {
 
         final JLabel systemButton = new JLabel();
 
-        systemButton.setIcon(ResourceUtil.getImageIcon("button/" + actionType + ".png"));
+        systemButton.setIcon(ResourcesUtils.getImageIcon("button/" + actionType + ".png"));
         systemButton.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (actionType.equals("exit"))
-                    SystemUtil.halt();
+                    ProgramUtils.haltProgram();
                 else
                     frame.setState(JFrame.ICONIFIED);
             }
@@ -130,13 +137,13 @@ public class Frame extends JFrame {
             @Override
             public void mouseEntered(MouseEvent e) {
                 setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                systemButton.setIcon(ResourceUtil.getImageIcon("button/" + actionType + "_hover.png"));
+                systemButton.setIcon(ResourcesUtils.getImageIcon("button/" + actionType + "_hover.png"));
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
                 setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-                systemButton.setIcon(ResourceUtil.getImageIcon("button/" + actionType + ".png"));
+                systemButton.setIcon(ResourcesUtils.getImageIcon("button/" + actionType + ".png"));
             }
 
             @Override
@@ -153,7 +160,7 @@ public class Frame extends JFrame {
         int axisX = Settings.FRAME_WIDTH - Settings.FRAME_SHADOW_SIZE - 48 * createdButtonsCount;
         int axisY = Settings.FRAME_SHADOW_SIZE;
 
-        if (SystemUtil.isUnix()) {
+        if (OSUtils.isLinux()) {
             axisX -= Settings.FRAME_SHADOW_SIZE;
             axisY -= Settings.FRAME_SHADOW_SIZE;
         }
@@ -168,11 +175,17 @@ public class Frame extends JFrame {
      */
     private void setupBackgroundImage() {
 
-        Config launcherConfig = new Config("launcher", false);
+        Config launcherConfig = null;
 
-        if (launcherConfig.hasValue("launcherSelectedTheme")) {
+        try {
+            launcherConfig = new Config(Paths.get(ProgramUtils.getStoragePath() + "/launcher.conf"), false);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-            String themeName = launcherConfig.getString("launcherSelectedTheme").replace("Тема оформления: ", "");
+        if (launcherConfig != null && launcherConfig.hasProperty("launcherSelectedTheme")) {
+
+            String themeName = launcherConfig.getProperty("launcherSelectedTheme").replace("Тема оформления: ", "");
 
             switch (themeName) {
                 case "Осень":

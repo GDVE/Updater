@@ -1,4 +1,4 @@
-package ru.simplemc.updater.util.enums;
+package ru.simplemc.updater.gui.fonts;
 
 public enum FontFamily {
     FSElliotPro,

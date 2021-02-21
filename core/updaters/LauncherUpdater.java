@@ -1,12 +1,8 @@
 package ru.simplemc.updater.core.updaters;
 
-import ru.simplemc.updater.core.Downloader;
 import ru.simplemc.updater.core.LauncherExecutor;
 import ru.simplemc.updater.data.json.JSONFile;
 import ru.simplemc.updater.gui.Frame;
-import ru.simplemc.updater.util.CryptUtil;
-import ru.simplemc.updater.util.MessageUtil;
-import ru.simplemc.updater.util.PathUtil;
 
 import java.io.File;
 import java.io.IOException;

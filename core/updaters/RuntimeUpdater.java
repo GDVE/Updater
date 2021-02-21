@@ -3,11 +3,9 @@ package ru.simplemc.updater.core.updaters;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import ru.simplemc.updater.core.Downloader;
 import ru.simplemc.updater.core.RuntimeInstaller;
 import ru.simplemc.updater.data.json.JSONFile;
 import ru.simplemc.updater.gui.Frame;
-import ru.simplemc.updater.util.MessageUtil;
 import ru.simplemc.updater.util.SystemUtil;
 
 import java.io.*;

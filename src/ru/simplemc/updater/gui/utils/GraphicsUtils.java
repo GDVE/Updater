@@ -1,8 +1,8 @@
 package ru.simplemc.updater.gui.utils;
 
 import ru.simplemc.updater.Settings;
-import ru.simplemc.updater.util.ResourceUtil;
-import ru.simplemc.updater.util.SystemUtil;
+import ru.simplemc.updater.utils.OSUtils;
+import ru.simplemc.updater.utils.ResourcesUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,9 +13,9 @@ public class GraphicsUtils {
     public static void drawString(Graphics2D graphics2D, float fontSize, String fontName, String color, String text, int x, int y) {
 
         graphics2D.setColor(Color.decode("#" + color));
-        graphics2D.setFont(ResourceUtil.getFont(fontName, fontSize));
+        graphics2D.setFont(ResourcesUtils.getFont(fontName, fontSize));
 
-        if (SystemUtil.isUnix())
+        if (OSUtils.isLinux())
             x = x - Settings.FRAME_SHADOW_SIZE;
 
         graphics2D.drawString(text, x, y);
@@ -23,12 +23,12 @@ public class GraphicsUtils {
 
     public static void drawCenteredString(Graphics2D graphics2D, Rectangle rect, float fontSize, String fontName, String color, String text) {
 
-        Font font = ResourceUtil.getFont(fontName, fontSize);
+        Font font = ResourcesUtils.getFont(fontName, fontSize);
         FontMetrics metrics = graphics2D.getFontMetrics(font);
         int x = rect.x + (rect.width - metrics.stringWidth(text)) / 2;
         int y = rect.y + ((rect.height - metrics.getHeight()) / 2) + metrics.getAscent();
 
-        if (SystemUtil.isUnix())
+        if (OSUtils.isLinux())
             x = x - Settings.FRAME_SHADOW_SIZE;
 
         graphics2D.setColor(Color.decode("#" + color));
@@ -38,9 +38,9 @@ public class GraphicsUtils {
 
     public static void drawBackground(Graphics2D graphics2D, JPanel panel) {
 
-        BufferedImage bufferedImage = ResourceUtil.getBufferedImage("backgrounds/background_" + Settings.BACKGROUND_IMAGE + ".png");
+        BufferedImage bufferedImage = ResourcesUtils.getBufferedImage("backgrounds/background_" + Settings.BACKGROUND_IMAGE + ".png");
 
-        if (SystemUtil.isUnix())
+        if (OSUtils.isLinux())
             graphics2D.drawImage(bufferedImage, 0, 0, Settings.FRAME_WIDTH, Settings.FRAME_HEIGHT, panel);
         else
             graphics2D.drawImage(bufferedImage, Settings.FRAME_SHADOW_SIZE, Settings.FRAME_SHADOW_SIZE, Settings.FRAME_WIDTH - Settings.FRAME_SHADOW_SIZE * 2, Settings.FRAME_HEIGHT - Settings.FRAME_SHADOW_SIZE * 2, panel);

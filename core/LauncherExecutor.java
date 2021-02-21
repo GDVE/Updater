@@ -3,8 +3,6 @@ package ru.simplemc.updater.core;
 import ru.simplemc.updater.core.updaters.RuntimeUpdater;
 import ru.simplemc.updater.gui.Frame;
 import ru.simplemc.updater.gui.pane.StartupPane;
-import ru.simplemc.updater.util.MessageUtil;
-import ru.simplemc.updater.util.SystemUtil;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -46,7 +44,6 @@ public class LauncherExecutor {
         } catch (IOException e) {
 
             e.printStackTrace();
-            System.out.println("Try start with Runtime.exec()...");
 
             try {
                 launcherProcess = Runtime.getRuntime().exec(runtimeExecutablePath + " -jar " + file.getPath());

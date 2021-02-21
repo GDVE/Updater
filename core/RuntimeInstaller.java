@@ -2,9 +2,6 @@ package ru.simplemc.updater.core;
 
 import org.json.simple.JSONObject;
 import org.rauschig.jarchivelib.Archiver;
-import ru.simplemc.updater.util.FilesScanner;
-import ru.simplemc.updater.util.MessageUtil;
-import ru.simplemc.updater.util.PathUtil;
 import ru.simplemc.updater.util.SystemUtil;
 
 import java.io.File;

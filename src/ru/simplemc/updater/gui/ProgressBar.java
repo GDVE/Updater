@@ -1,8 +1,8 @@
 package ru.simplemc.updater.gui;
 
 import ru.simplemc.updater.Settings;
-import ru.simplemc.updater.util.ResourceUtil;
-import ru.simplemc.updater.util.SystemUtil;
+import ru.simplemc.updater.utils.OSUtils;
+import ru.simplemc.updater.utils.ResourcesUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,7 +11,7 @@ public class ProgressBar extends JProgressBar {
 
     public ProgressBar(int height) {
 
-        setFont(ResourceUtil.getFont("FSElliotPro-Bold", 12));
+        setFont(ResourcesUtils.getFont("FSElliotPro-Bold", 12));
         setMinimum(0);
         setMaximum(100);
         setString("0%");
@@ -20,7 +20,7 @@ public class ProgressBar extends JProgressBar {
         setForeground(Color.decode("#92d246"));
         setBackground(Color.decode("#e7e7e6"));
 
-        if (SystemUtil.isUnix())
+        if (OSUtils.isLinux())
             setBounds(new Rectangle(40 - Settings.FRAME_SHADOW_SIZE, Settings.FRAME_HEIGHT - Settings.FRAME_SHADOW_SIZE - 40 - height, Settings.FRAME_WIDTH - Settings.FRAME_SHADOW_SIZE - 40 * 2, height));
         else
             setBounds(new Rectangle(40, Settings.FRAME_HEIGHT - Settings.FRAME_SHADOW_SIZE - 40 - height, Settings.FRAME_WIDTH - Settings.FRAME_SHADOW_SIZE - 40 * 2, height));

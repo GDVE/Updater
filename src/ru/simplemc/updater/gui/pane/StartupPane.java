@@ -2,7 +2,7 @@ package ru.simplemc.updater.gui.pane;
 
 import ru.simplemc.updater.Settings;
 import ru.simplemc.updater.gui.utils.GraphicsUtils;
-import ru.simplemc.updater.util.ResourceUtil;
+import ru.simplemc.updater.utils.ResourcesUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,7 +17,7 @@ public class StartupPane extends JPanel {
         status = "ПОЧТИ ГОТОВО";
         description = "Запускаю лаунчер...";
 
-        ImageIcon imageIcon = ResourceUtil.getImageIcon("animations/success.gif");
+        ImageIcon imageIcon = ResourcesUtils.getImageIcon("animations/success.gif");
         JLabel loadingIconLabel = new JLabel();
         loadingIconLabel.setIcon(imageIcon);
         loadingIconLabel.setBounds(Settings.FRAME_WIDTH / 2 - imageIcon.getIconWidth() / 2, 64, 64, 64);
