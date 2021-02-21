@@ -6,6 +6,8 @@ import ru.simplemc.updater.Settings;
 import ru.simplemc.updater.downloader.Downloader;
 import ru.simplemc.updater.downloader.file.DownloaderFile;
 import ru.simplemc.updater.downloader.file.DownloaderRuntimeArchiveFile;
+import ru.simplemc.updater.executor.LauncherExecutor;
+import ru.simplemc.updater.executor.UpdaterExecutor;
 import ru.simplemc.updater.gui.Frame;
 import ru.simplemc.updater.gui.utils.MessageUtils;
 import ru.simplemc.updater.utils.HTTPUtils;
@@ -13,6 +15,8 @@ import ru.simplemc.updater.utils.OSUtils;
 import ru.simplemc.updater.utils.ProgramUtils;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class UpdateThread extends Thread {
 
@@ -38,10 +42,17 @@ public class UpdateThread extends Thread {
             return;
         }
 
+        AtomicReference<Path> runtimeExecutableFilePath = new AtomicReference<>();
+        AtomicReference<Path> launcherExecutableFilePath = new AtomicReference<>();
+
         updateData.forEach((key, value) -> {
 
             if (!(value instanceof JSONObject)) {
                 throw new IllegalArgumentException("Value is not JSONObject, skipping it...");
+            }
+
+            if (key.equals("updater") && ProgramUtils.isDebugMode()) {
+                return;
             }
 
             DownloaderFile downloaderFile = key.equals("runtime") ? new DownloaderRuntimeArchiveFile((JSONObject) value) : new DownloaderFile((JSONObject) value);
@@ -54,19 +65,29 @@ public class UpdateThread extends Thread {
                 }
             }
 
+            if (downloaderFile instanceof DownloaderRuntimeArchiveFile) {
+                runtimeExecutableFilePath.set(((DownloaderRuntimeArchiveFile) downloaderFile).getRuntimeExecutableFile());
+            }
+
+            if (downloaderFile.getUrl().contains("Launcher.")) {
+                launcherExecutableFilePath.set(downloaderFile.getPath());
+            }
+
+            if (downloaderFile.getUrl().contains("Updater.")) {
+                try {
+                    new UpdaterExecutor().execute();
+                } catch (IOException e) {
+                    MessageUtils.printFullStackTraceWithExit("Не удалось перезапустить программу!", e);
+                }
+            }
         });
 
-        /*
-        SelfUpdater selfUpdater = new SelfUpdater(frame, updaterData.get("updater"));
-        selfUpdater.checkForUpdate();
-
-        RuntimeUpdater runtimeUpdater = new RuntimeUpdater(frame, updaterData.get("runtime"));
-        runtimeUpdater.checkForUpdate();
-
-        LauncherUpdater launcherUpdater = new LauncherUpdater(frame, updaterData.get("launcher"));
-        launcherUpdater.checkForUpdate(runtimeUpdater);
-        launcherUpdater.execute();
-         */
+        LauncherExecutor launcherExecutor = new LauncherExecutor(frame, runtimeExecutableFilePath.get().toString(), launcherExecutableFilePath.get().toString());
+        try {
+            launcherExecutor.execute();
+        } catch (IOException e) {
+            MessageUtils.printFullStackTraceWithExit("Не удалось запустить лаунчер!", e);
+        }
     }
 
     @Nullable

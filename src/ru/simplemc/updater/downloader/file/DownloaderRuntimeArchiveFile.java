@@ -36,15 +36,19 @@ public class DownloaderRuntimeArchiveFile extends DownloaderFile {
      */
     public void unpack() throws IOException {
 
-        if (getPath().getFileName().toString().endsWith(".zip"))
+        if (getPath().getFileName().toString().endsWith(".zip")) {
             CompressedUtils.unZipArchive(getPath().toFile());
-        else
+        } else
             CompressedUtils.decompressTarGzip(getPath().toFile());
 
-        //Files.delete(getPath());
+        Files.deleteIfExists(this.getPath());
         this.createFilesScheme();
     }
 
+    /**
+     * Создает файл-схему из файлов JRE (необходимо для более рациональной и быстрой проверки)
+     * @throws IOException - возвращает при невозможности записи файла-схемы
+     */
     private void createFilesScheme() throws IOException {
 
         JSONObject filesScheme = new JSONObject();
@@ -102,5 +106,12 @@ public class DownloaderRuntimeArchiveFile extends DownloaderFile {
         }
 
         return false;
+    }
+
+    /**
+     * @return Возвращает путь до исполняемого файла JRE
+     */
+    public Path getRuntimeExecutableFile() {
+        return runtimeExecutableFile;
     }
 }

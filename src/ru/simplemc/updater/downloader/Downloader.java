@@ -22,7 +22,7 @@ public class Downloader {
         this.downloaderFile = downloaderFile;
         this.downloaderPane = new DownloaderPane();
         this.progressBar = this.downloaderPane.getProgressBar();
-        this.downloaderPane.setStatusAndDescription("Проверка файла", this.downloaderFile.getPath().getFileName().toString());
+        this.downloaderPane.setStatusAndDescription("Загрузка файла", this.downloaderFile.getPath().getFileName().toString());
         frame.setPane(this.downloaderPane);
     }
 

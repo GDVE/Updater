@@ -54,8 +54,6 @@ public class DownloaderFile {
 
         if (!Files.exists(parentDir)) {
             Files.createDirectories(parentDir);
-        } else {
-            Files.deleteIfExists(this.path);
         }
     }
 }

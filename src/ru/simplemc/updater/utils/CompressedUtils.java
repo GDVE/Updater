@@ -5,6 +5,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -16,6 +17,7 @@ public class CompressedUtils {
 
     public static void unZipArchive(File archiveFile, File extractDirectory) {
         try {
+
             FileInputStream fileInputStream = new FileInputStream(archiveFile);
             ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(fileInputStream));
             ZipEntry zipEntry;
@@ -26,6 +28,7 @@ public class CompressedUtils {
 
             zipInputStream.close();
             fileInputStream.close();
+
         } catch (Exception exception) {
             exception.printStackTrace();
         }
