@@ -1,0 +1,73 @@
+plugins {
+    // Apply the java plugin to add support for Java
+    id 'java'
+
+    // Analog of Maven Shade plugin https://imperceptiblethoughts.com/shadow/
+    id 'com.github.johnrengelman.shadow' version '4.0.4'
+
+    // https://github.com/TheBoegl/gradle-launch4j
+    id 'edu.sc.seis.launch4j' version '2.4.6'
+}
+
+repositories {
+    mavenCentral()
+}
+
+// Project settings
+archivesBaseName = 'Updater'
+group = 'ru.simplemc'
+version = '1.0'
+
+ext {
+    mainClassName = 'ru.simplemc.updater.Updater'
+}
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+dependencies {
+    compile group: 'org.rauschig', name: 'jarchivelib', version: '1.0.0'
+    compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(Jar) {
+    version = null
+}
+
+jar {
+    enabled = false // Disable creating archive here. Use shadowJar to create JAR with libraries
+    manifest {
+        attributes 'Main-Class': project.ext.mainClassName
+    }
+}
+
+/* Packed JAR with all libraries */
+shadowJar {
+    classifier = null
+}
+
+/* Build *.exe */
+launch4j {
+    version = '1.0.0.0'
+    textVersion = project.version
+    mainClassName = project.ext.mainClassName
+    icon = "${projectDir}/icon.ico"
+    jar = shadowJar.archivePath
+    errTitle = 'SimpleMinecraft.Ru'
+    supportUrl = 'https://f.simpleminecraft.ru/'
+    language = 'RUSSIAN'
+    // Don't use 'Installer' and 'Updater' keywords here - exe will be created with required admin rights =|
+    copyright = 'SimpleMinecraft.Ru'
+    fileDescription = 'SMC Starter'
+    productName = 'SMCStarter'
+    internalName = 'SMCStarter'
+    outfile = 'Starter.exe'
+}
+
+// Task dependency
+tasks.createExe.dependsOn tasks.shadowJar
+tasks.build.dependsOn tasks.shadowJar, tasks.createExe
