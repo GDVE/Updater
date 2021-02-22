@@ -99,14 +99,12 @@ public class UpdateThread extends Thread {
 
     private JSONObject getUpdateData() {
 
+        JSONObject updaterParams = new JSONObject();
+        updaterParams.put("updater_format", ProgramUtils.getExecutableFileExtension());
+        updaterParams.put("system_id", OSUtils.getSystemIdWithArch());
+
         try {
-
-            JSONObject updaterParams = new JSONObject();
-            updaterParams.put("updater_format", ProgramUtils.getExecutableFileExtension());
-            updaterParams.put("system_id", OSUtils.getSystemIdWithArch());
-
-            return HTTPUtils.get(Settings.HTTP_ADDRESS, "/launcher/updater.php", updaterParams);
-
+            return HTTPUtils.post("/launcher/updater.php", updaterParams);
         } catch (Exception e) {
             MessageUtils.printFullStackTraceWithExit("Не удалось получить ответ от сервера!", e);
             return null;
