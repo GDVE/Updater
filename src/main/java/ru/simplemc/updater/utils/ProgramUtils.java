@@ -31,7 +31,7 @@ public class ProgramUtils {
 
         if (launcherPath != null) {
 
-            if (launcherPath.endsWith("out/production/Updater"))
+            if (launcherPath.endsWith("classes/java/main"))
                 return "4f9b53500448cf766c81c7e68d614283";
             else
                 return CryptUtils.md5(launcherPath);
