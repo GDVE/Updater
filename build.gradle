@@ -61,11 +61,11 @@ launch4j {
     supportUrl = 'https://f.simpleminecraft.ru/'
     language = 'RUSSIAN'
     // Don't use 'Installer' and 'Updater' keywords here - exe will be created with required admin rights =|
-    copyright = 'SimpleMinecraft.Ru'
-    fileDescription = 'SMC Starter'
-    productName = 'SMCStarter'
-    internalName = 'SMCStarter'
-    outfile = 'Starter.exe'
+    copyright = 'Created by Goodvise'
+    fileDescription = 'SMC Starter program'
+    productName = 'SMC Starter'
+    internalName = 'SMC Starter'
+    outfile = 'SimpleMinecraft.exe'
 }
 
 // Task dependency
