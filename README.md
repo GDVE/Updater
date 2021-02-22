@@ -1,3 +1,5 @@
 # Updater
 
-Updater for Launcher
+Updater for Launcher (как говорится).
+
+Программа используется для загрузки обновлений лаунчера.
