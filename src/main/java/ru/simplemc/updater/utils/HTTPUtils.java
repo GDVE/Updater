@@ -27,8 +27,8 @@ public class HTTPUtils {
         try {
             response = post(path, params.toJSONString());
         } catch (Exception e) {
-            if (Settings.HTTP_ADDRESS.contains(".net")) {
-                Settings.HTTP_ADDRESS = Settings.HTTP_ADDRESS.replace(".net", ".ru");
+            if (Settings.HTTP_ADDRESS.contains(".ru")) {
+                Settings.HTTP_ADDRESS = Settings.HTTP_ADDRESS.replace(".ru", ".net");
                 response = post(path, params.toJSONString());
             } else
                 throw e;
