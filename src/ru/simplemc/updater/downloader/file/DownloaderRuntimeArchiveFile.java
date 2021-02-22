@@ -75,9 +75,6 @@ public class DownloaderRuntimeArchiveFile extends DownloaderFile {
     @Override
     public boolean isInvalid() {
 
-        return true;
-
-        /*
         if (!Files.exists(this.runtimeDirectory) || !Files.exists(this.runtimeExecutableFile) || !Files.exists(this.runtimeFilesScheme)) {
             return true;
         }
@@ -107,7 +104,6 @@ public class DownloaderRuntimeArchiveFile extends DownloaderFile {
         }
 
         return false;
-         */
     }
 
     /**
