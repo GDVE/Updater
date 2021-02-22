@@ -3,12 +3,15 @@ package ru.simplemc.updater.downloader.file;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.rauschig.jarchivelib.Archiver;
+import org.rauschig.jarchivelib.ArchiverFactory;
 import ru.simplemc.updater.gui.utils.MessageUtils;
 import ru.simplemc.updater.utils.CompressedUtils;
 import ru.simplemc.updater.utils.FileUtils;
 import ru.simplemc.updater.utils.OSUtils;
 import ru.simplemc.updater.utils.ProgramUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -35,8 +38,11 @@ public class DownloaderRuntimeArchiveFile extends DownloaderFile {
 
         if (getPath().getFileName().toString().endsWith(".zip")) {
             CompressedUtils.unZipArchive(getPath().toFile());
-        } else
-            CompressedUtils.decompressTarGzip(getPath().toFile());
+        } else {
+            File archiveFile = this.getPath().toFile();
+            Archiver archiver = ArchiverFactory.createArchiver(archiveFile);
+            archiver.extract(archiveFile, archiveFile.getParentFile());
+        }
 
         Files.deleteIfExists(this.getPath());
         this.createFilesScheme();

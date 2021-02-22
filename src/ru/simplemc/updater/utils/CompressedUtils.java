@@ -1,11 +1,9 @@
 package ru.simplemc.updater.utils;
 
-import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
-
-import java.io.*;
-import java.nio.file.Files;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -63,71 +61,6 @@ public class CompressedUtils {
         }
 
         fileOutputStream.close();
-    }
-
-    public static void decompressTarGzip(File archiveFile) {
-
-        TarArchiveInputStream tarArchiveInputStream = null;
-
-        try {
-            tarArchiveInputStream = new TarArchiveInputStream(new GzipCompressorInputStream(new BufferedInputStream(new FileInputStream(archiveFile))));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        if (tarArchiveInputStream != null) {
-
-            TarArchiveEntry tarArchiveEntry;
-
-            try {
-                while ((tarArchiveEntry = tarArchiveInputStream.getNextTarEntry()) != null) {
-                    extractFromTar(tarArchiveEntry, tarArchiveInputStream, archiveFile.getParentFile());
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            try {
-                tarArchiveInputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            if (archiveFile.delete())
-                System.out.println("Remove unpacked archive: " + archiveFile);
-        }
-    }
-
-    public static void extractFromTar(TarArchiveEntry tarArchiveEntry, TarArchiveInputStream tarArchiveInputStream, File extractDirectory) throws IOException {
-
-        if (tarArchiveEntry.isDirectory())
-            return;
-
-        String zipEntryName = slashToFileSeparator(tarArchiveEntry.getName());
-        String zipEntryDirPath;
-
-        if (zipEntryName.lastIndexOf(File.separator) != -1)
-            zipEntryDirPath = zipEntryName.substring(0, zipEntryName.lastIndexOf(File.separator));
-        else
-            zipEntryDirPath = "";
-
-        new File(extractDirectory + File.separator + zipEntryDirPath).mkdirs();
-
-        FileOutputStream fileOutputStream = new FileOutputStream(extractDirectory + File.separator + zipEntryName);
-        byte[] buffer = new byte[1024];
-
-        while (true) {
-
-            int length = tarArchiveInputStream.read(buffer);
-
-            if (length < 0)
-                break;
-
-            fileOutputStream.write(buffer, 0, length);
-        }
-
-        fileOutputStream.close();
-
     }
 
     private static String slashToFileSeparator(String source) {
