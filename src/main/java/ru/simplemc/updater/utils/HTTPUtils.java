@@ -22,17 +22,7 @@ public class HTTPUtils {
      */
     public static JSONObject post(String path, JSONObject params) throws Exception {
 
-        String response;
-
-        try {
-            response = post(path, params.toJSONString());
-        } catch (Exception e) {
-            if (Settings.HTTP_ADDRESS.contains(".ru")) {
-                Settings.HTTP_ADDRESS = Settings.HTTP_ADDRESS.replace(".ru", ".net");
-                response = post(path, params.toJSONString());
-            } else
-                throw e;
-        }
+        String response = post(path, params.toJSONString());
 
         try {
             return (JSONObject) new JSONParser().parse(response);
@@ -45,18 +35,18 @@ public class HTTPUtils {
     /**
      * Отправлет пост запрос на сервер
      *
-     * @param path       - путь до исполняемого файла на хосте
-     * @param jsonParams - JSON объект с данными для отправки на хост
+     * @param path   - путь до исполняемого файла на хосте
+     * @param params - JSON строка с данными для отправки на сервер
      * @return - возвращает JSONObject в случае успеха
      * @throws Exception - выбрасывает в случае проблем с соединением
      */
-    private static String post(String path, String jsonParams) throws Exception {
+    private static String post(String path, String params) throws Exception {
 
         HttpURLConnection connection = openConnection(Settings.HTTP_ADDRESS, path);
         connection.disconnect();
 
         DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream());
-        dataOutputStream.writeBytes(jsonParams);
+        dataOutputStream.writeBytes(params);
         dataOutputStream.flush();
         dataOutputStream.close();
 
