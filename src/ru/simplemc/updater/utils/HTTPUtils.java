@@ -3,6 +3,7 @@ package ru.simplemc.updater.utils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import ru.simplemc.updater.Settings;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -14,19 +15,48 @@ import java.net.URL;
 public class HTTPUtils {
 
     /**
-     * @param hostname - имя хоста на который отправляем запрос
-     * @param path     - путь до исполняемого файла на хосте
-     * @param params   - JSON объект с данными для отправки на хост
+     * @param path   - путь до исполняемого файла на хосте
+     * @param params - JSON объект с данными для отправки на хост
      * @return - возвращает JSONObject в случае успеха
      * @throws Exception - выбрасывает в случае проблем с соединением
      */
-    public static JSONObject get(String hostname, String path, JSONObject params) throws Exception {
+    public static JSONObject post(String path, JSONObject params) throws Exception {
 
-        HttpURLConnection connection = openConnection(hostname, path);
+        String response;
+
+        try {
+            response = post(path, params.toJSONString());
+        } catch (Exception e) {
+            if (Settings.HTTP_ADDRESS.contains(".net")) {
+                Settings.HTTP_ADDRESS = Settings.HTTP_ADDRESS.replace(".net", ".ru");
+                response = post(path, params.toJSONString());
+            } else
+                throw e;
+        }
+
+        try {
+            return (JSONObject) new JSONParser().parse(response);
+        } catch (ParseException e) {
+            e.setUnexpectedObject(response);
+            throw e;
+        }
+    }
+
+    /**
+     * Отправлет пост запрос на сервер
+     *
+     * @param path       - путь до исполняемого файла на хосте
+     * @param jsonParams - JSON объект с данными для отправки на хост
+     * @return - возвращает JSONObject в случае успеха
+     * @throws Exception - выбрасывает в случае проблем с соединением
+     */
+    private static String post(String path, String jsonParams) throws Exception {
+
+        HttpURLConnection connection = openConnection(Settings.HTTP_ADDRESS, path);
         connection.disconnect();
 
         DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream());
-        dataOutputStream.writeBytes(params.toJSONString());
+        dataOutputStream.writeBytes(jsonParams);
         dataOutputStream.flush();
         dataOutputStream.close();
 
@@ -41,12 +71,7 @@ public class HTTPUtils {
         connectionInputStream.close();
         bufferedReader.close();
 
-        try {
-            return (JSONObject) new JSONParser().parse(stringBuffer.toString());
-        } catch (ParseException e) {
-            e.setUnexpectedObject(stringBuffer.toString());
-            throw e;
-        }
+        return stringBuffer.toString();
     }
 
     /**
