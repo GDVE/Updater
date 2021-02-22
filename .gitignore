@@ -1,2 +1,14 @@
-# Project exclude paths
-/out/
+# Gradle
+/.gradle
+/build
+
+# IDEA
+/.idea
+/out
+
+# OS
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+.LSOverride

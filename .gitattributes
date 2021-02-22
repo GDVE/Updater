@@ -1,0 +1,9 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+# These are explicitly windows files and should use crlf
+*.bat           text eol=crlf
+*.json          text
+*.jar           binary
+*.zip           binary
+*.class         binary
+*.png           binary
