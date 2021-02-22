@@ -41,27 +41,33 @@ public class HTTPUtils {
      * @throws Exception - выбрасывает в случае проблем с соединением
      */
     private static String post(String path, String params) throws Exception {
+        try {
 
-        HttpURLConnection connection = openConnection(Settings.HTTP_ADDRESS, path);
-        connection.disconnect();
+            HttpURLConnection connection = openConnection(Settings.HTTP_ADDRESS, path);
+            connection.disconnect();
 
-        DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream());
-        dataOutputStream.writeBytes(params);
-        dataOutputStream.flush();
-        dataOutputStream.close();
+            DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream());
+            dataOutputStream.writeBytes(params);
+            dataOutputStream.flush();
+            dataOutputStream.close();
 
-        InputStream connectionInputStream = connection.getInputStream();
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        StringBuilder stringBuffer = new StringBuilder();
-        String line;
+            InputStream connectionInputStream = connection.getInputStream();
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            StringBuilder stringBuffer = new StringBuilder();
+            String line;
 
-        while ((line = bufferedReader.readLine()) != null)
-            stringBuffer.append(line);
+            while ((line = bufferedReader.readLine()) != null)
+                stringBuffer.append(line);
 
-        connectionInputStream.close();
-        bufferedReader.close();
+            connectionInputStream.close();
+            bufferedReader.close();
 
-        return stringBuffer.toString();
+            return stringBuffer.toString();
+
+        } catch (Exception e) {
+            if (switchToHTTPS()) return post(path, params);
+            else throw e;
+        }
     }
 
     /**
@@ -73,7 +79,7 @@ public class HTTPUtils {
     private static HttpURLConnection openConnection(String hostname, String path) throws Exception {
 
         HttpURLConnection connection = (HttpURLConnection) new URL(hostname + path).openConnection();
-        connection.setRequestProperty("User-Agent", "SimpleMinecraft.Ru Updater");
+        connection.setRequestProperty("User-Agent", Settings.HTTP_USER_AGENT);
         connection.setRequestMethod("POST");
         connection.setUseCaches(false);
         connection.setRequestProperty("Content-Type", "application/json");
@@ -81,6 +87,26 @@ public class HTTPUtils {
         connection.setDoOutput(true);
 
         return connection;
+    }
+
+    /**
+     * @return Возвращает текущий HTTP протокол с которым работает лаунчер на данный момент
+     */
+    public static String getProtocol() {
+        return Settings.HTTP_ADDRESS.startsWith("https://") ? "https" : "http";
+    }
+
+    /**
+     * @return возвращает TRUE при успешном переключении на протокол HTTPS
+     */
+    private static boolean switchToHTTPS() {
+
+        if (getProtocol().equals("http")) {
+            Settings.HTTP_ADDRESS = Settings.HTTP_ADDRESS.replace("http://", "https://");
+            return true;
+        }
+
+        return false;
     }
 
 }
