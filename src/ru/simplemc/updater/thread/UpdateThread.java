@@ -1,6 +1,5 @@
 package ru.simplemc.updater.thread;
 
-import com.sun.istack.internal.Nullable;
 import org.json.simple.JSONObject;
 import ru.simplemc.updater.Settings;
 import ru.simplemc.updater.downloader.Downloader;
@@ -98,7 +97,6 @@ public class UpdateThread extends Thread {
         }
     }
 
-    @Nullable
     private JSONObject getUpdateData() {
 
         try {

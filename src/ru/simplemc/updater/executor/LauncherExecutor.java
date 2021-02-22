@@ -1,6 +1,5 @@
 package ru.simplemc.updater.executor;
 
-import com.sun.istack.internal.NotNull;
 import ru.simplemc.updater.gui.Frame;
 import ru.simplemc.updater.gui.pane.StartupPane;
 import ru.simplemc.updater.utils.ProgramUtils;
@@ -16,7 +15,7 @@ public class LauncherExecutor implements ApplicationExecutor {
     private final String runtimeExecutableFilePath;
     private final String launcherExecutableFilePath;
 
-    public LauncherExecutor(@NotNull Frame frame, @NotNull String runtimeExecutableFilePath, @NotNull String launcherExecutableFilePath) {
+    public LauncherExecutor(Frame frame, String runtimeExecutableFilePath, String launcherExecutableFilePath) {
         this.runtimeExecutableFilePath = runtimeExecutableFilePath;
         this.launcherExecutableFilePath = launcherExecutableFilePath;
         frame.setPane(new StartupPane());
@@ -38,7 +37,7 @@ public class LauncherExecutor implements ApplicationExecutor {
      * Наблюдаем за процессом лаунчера, ждем от него заветного слова и выключаемся :)
      * @param process - запущенный процесс лаунчера
      */
-    private void spectateForProcess(@NotNull Process process) {
+    private void spectateForProcess(Process process) {
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         String line;

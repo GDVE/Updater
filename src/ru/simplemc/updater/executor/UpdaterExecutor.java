@@ -1,6 +1,5 @@
 package ru.simplemc.updater.executor;
 
-import com.sun.istack.internal.Nullable;
 import ru.simplemc.updater.gui.Frame;
 import ru.simplemc.updater.gui.pane.StartupPane;
 import ru.simplemc.updater.gui.utils.MessageUtils;
@@ -57,7 +56,6 @@ public final class UpdaterExecutor implements ApplicationExecutor {
      * @param frame - окошко программы
      * @return - возвращает UpdateExecutor для перезапуска программы после обновленя
      */
-    @Nullable
     public static UpdaterExecutor init(Frame frame) {
         if (!ProgramUtils.isDebugMode()) {
             try {

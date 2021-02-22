@@ -1,7 +1,5 @@
 package ru.simplemc.updater.config;
 
-import com.sun.istack.internal.NotNull;
-
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -16,7 +14,7 @@ public class Config extends Properties {
     private final Path path;
     private final Map<String, String> defaultValues = new HashMap<>();
 
-    public Config(@NotNull Path path, boolean withCreate) throws IOException {
+    public Config(Path path, boolean withCreate) throws IOException {
 
         this.path = path;
 
