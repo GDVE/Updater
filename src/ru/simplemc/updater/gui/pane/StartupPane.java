@@ -30,7 +30,7 @@ public class StartupPane extends JPanel {
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         GraphicsUtils.drawBackground(graphics2D, this);
         GraphicsUtils.drawString(graphics2D, 23, "FSElliotPro-Heavy", "ffffff", status, 40, 76);
-        GraphicsUtils.drawString(graphics2D, 16, "FSElliotPro", "e7e7e6", description, 40, 102);
+        GraphicsUtils.drawString(graphics2D, 16, "FSElliotPro-Bold", "e7e7e6", description, 40, 102);
     }
 
     public void setStatusAndDescription(String statusValue, String descriptionValue) {

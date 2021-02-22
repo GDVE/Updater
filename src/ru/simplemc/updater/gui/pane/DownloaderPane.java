@@ -28,7 +28,7 @@ public class DownloaderPane extends JPanel {
         GraphicsUtils.drawBackground(graphics2D, this);
 
         GraphicsUtils.drawString(graphics2D, 23, "FSElliotPro-Heavy", "ffffff", status, 40, progressBar.isVisible() ? 68 : 76);
-        GraphicsUtils.drawString(graphics2D, 16, "FSElliotPro", "e7e7e6", description, 40, progressBar.isVisible() ? 92 : 102);
+        GraphicsUtils.drawString(graphics2D, 16, "FSElliotPro-Bold", "e7e7e6", description, 40, progressBar.isVisible() ? 92 : 102);
     }
 
     public ProgressBar getProgressBar() {
