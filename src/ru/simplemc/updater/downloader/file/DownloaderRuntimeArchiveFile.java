@@ -9,7 +9,6 @@ import ru.simplemc.updater.utils.FileUtils;
 import ru.simplemc.updater.utils.OSUtils;
 import ru.simplemc.updater.utils.ProgramUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,9 +24,7 @@ public class DownloaderRuntimeArchiveFile extends DownloaderFile {
         super(fileInfoJSON);
         Path runtimesStorage = Paths.get(ProgramUtils.getStoragePath() + "/runtime");
         this.runtimeDirectory = Paths.get(runtimesStorage + "/" + (OSUtils.isMacOS() ? "jre1.8.0_51.jre" : "jre1.8.0_51"));
-        this.runtimeExecutableFile = Paths.get(runtimeDirectory + "/" + (OSUtils.isMacOS()
-                ? File.separator + "Contents" + File.separator + "Home" + File.separator : File.separator)
-                + "bin", OSUtils.isWindows() ? "java.exe" : "java");
+        this.runtimeExecutableFile = Paths.get(runtimeDirectory + (OSUtils.isMacOS() ? "/Contents/Home/bin/" : "/bin/") + (OSUtils.isWindows() ? "java.exe" : "java"));
         this.runtimeFilesScheme = Paths.get(runtimesStorage + "/" + runtimeDirectory.getFileName().toString() + ".json");
     }
 
@@ -47,6 +44,7 @@ public class DownloaderRuntimeArchiveFile extends DownloaderFile {
 
     /**
      * Создает файл-схему из файлов JRE (необходимо для более рациональной и быстрой проверки)
+     *
      * @throws IOException - возвращает при невозможности записи файла-схемы
      */
     private void createFilesScheme() throws IOException {
