@@ -35,11 +35,15 @@ public class Downloader {
         FileOutputStream fileOutputStream = new FileOutputStream(downloaderFile.getPath().toFile());
 
         byte[] buffer = new byte[4096];
-        int writeBytes = 0, bufferSize;
+        long currentFileSize = 0;
+        int bufferSize;
 
         while ((bufferSize = inputStream.read(buffer, 0, buffer.length)) >= 0) {
+
+            currentFileSize += bufferSize;
             fileOutputStream.write(buffer, 0, bufferSize);
-            this.progressBar.setValue((int) ((writeBytes += bufferSize) * 100 / downloaderFile.getSize()));
+
+            this.progressBar.setValue(Math.round(currentFileSize * 100F / downloaderFile.getSize()));
         }
 
         inputStream.close();
