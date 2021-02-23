@@ -1,7 +1,6 @@
 package ru.simplemc.updater.downloader.file;
 
 import org.json.simple.JSONObject;
-import ru.simplemc.updater.Settings;
 import ru.simplemc.updater.utils.CryptUtils;
 import ru.simplemc.updater.utils.ProgramUtils;
 

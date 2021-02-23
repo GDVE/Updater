@@ -166,7 +166,6 @@ public class Frame extends JFrame {
         }
 
         systemButton.setBounds(axisX, axisY, 48, 30);
-
         return systemButton;
     }
 
@@ -226,9 +225,8 @@ public class Frame extends JFrame {
 
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH");
             String currentHour = simpleDateFormat.format(System.currentTimeMillis());
-            String[] nightHours = {"17", "18", "19", "20", "21", "22", "23", "00", "01", "02", "03", "04", "05", "06"};
 
-            for (String nightHour : nightHours) {
+            for (String nightHour : Settings.NIGHT_HOURS) {
                 if (currentHour.equals(nightHour)) {
                     BACKGROUND_IMAGE = BACKGROUND_IMAGE.replace(BACKGROUND_IMAGE, BACKGROUND_IMAGE + "_night");
                     break;
