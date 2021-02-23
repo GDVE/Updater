@@ -19,7 +19,7 @@ public class DownloaderFile {
 
     public DownloaderFile(JSONObject fileInfoJSON) {
         this.path = fileInfoJSON.get("path").equals("%updater_path%") ? ProgramUtils.getProgramPath() : Paths.get(ProgramUtils.getStoragePath() + "/" + fileInfoJSON.get("path"));
-        this.url = Settings.HTTP_ADDRESS + String.valueOf(fileInfoJSON.get("url")).replaceAll(" ", "%20");
+        this.url = String.valueOf(fileInfoJSON.get("url")).replaceAll(" ", "%20");
         this.size = Long.parseLong(String.valueOf(fileInfoJSON.get("size")));
         this.md5 = String.valueOf(fileInfoJSON.get("md5"));
     }
@@ -29,10 +29,6 @@ public class DownloaderFile {
     }
 
     public String getUrl() {
-
-        if (url.endsWith(".jar") || url.endsWith(".exe"))
-            return url + "?" + System.currentTimeMillis();
-
         return url;
     }
 

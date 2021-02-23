@@ -2,7 +2,7 @@ package ru.simplemc.updater;
 
 public class Settings {
 
-    public static String HTTP_ADDRESS = "http://api.simpleminecraft.ru/";
+    public static String HTTP_ADDRESS = "http://api.simpleminecraft.ru";
     public static final String HTTP_USER_AGENT = "SimpleMinecraft.Ru Updater";
 
     public static final int FRAME_WIDTH = 360;

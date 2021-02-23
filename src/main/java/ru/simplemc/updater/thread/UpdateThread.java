@@ -1,7 +1,6 @@
 package ru.simplemc.updater.thread;
 
 import org.json.simple.JSONObject;
-import ru.simplemc.updater.Settings;
 import ru.simplemc.updater.downloader.Downloader;
 import ru.simplemc.updater.downloader.file.DownloaderFile;
 import ru.simplemc.updater.downloader.file.DownloaderRuntimeArchiveFile;
@@ -62,7 +61,7 @@ public class UpdateThread extends Thread {
 
                 try {
                     new Downloader(frame, downloaderFile).process();
-                } catch (IOException e) {
+                } catch (Exception e) {
                     MessageUtils.printFullStackTraceWithExit("Не удалось загрузить файл " + downloaderFile.getPath().getFileName().toString(), e);
                 }
 
