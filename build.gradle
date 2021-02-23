@@ -14,7 +14,7 @@ repositories {
 }
 
 // Project settings
-archivesBaseName = 'Updater'
+archivesBaseName = 'SimpleMinecraft'
 group = 'ru.simplemc'
 version = '1.0'
 
