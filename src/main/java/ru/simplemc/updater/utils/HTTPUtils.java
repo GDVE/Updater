@@ -5,12 +5,15 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import ru.simplemc.updater.Settings;
 
+import javax.net.ssl.*;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 
 public class HTTPUtils {
 
@@ -64,10 +67,51 @@ public class HTTPUtils {
 
             return stringBuffer.toString();
 
+        } catch (SSLException e) {
+            if (disableSSLCertificatesChecks()) return post(path, params);
+            else throw e;
         } catch (Exception e) {
             if (switchToHTTPS()) return post(path, params);
             else throw e;
         }
+    }
+
+    /**
+     * Необходима для предотвращения двойного отключения
+     */
+    private static boolean sslCheckingIsDisabled = false;
+
+    /**
+     * Выключает проверку SSL сертификатов у определенной категории игроков,
+     * у которых все совсем плохо с работспособностью HTTP.
+     */
+    private static boolean disableSSLCertificatesChecks() {
+
+        if (sslCheckingIsDisabled) {
+            return false;
+        }
+
+        TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
+            public X509Certificate[] getAcceptedIssuers() {
+                return null;
+            }
+
+            public void checkClientTrusted(X509Certificate[] certs, String authType) {
+            }
+
+            public void checkServerTrusted(X509Certificate[] certs, String authType) {
+            }
+        }};
+
+        try {
+            SSLContext sc = SSLContext.getInstance("TLS");
+            sc.init(null, trustAllCerts, new SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+        } catch (Exception ignored) {
+        }
+
+        sslCheckingIsDisabled = true;
+        return true;
     }
 
     /**
