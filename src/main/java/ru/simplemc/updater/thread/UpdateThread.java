@@ -66,7 +66,7 @@ public class UpdateThread extends Thread {
                     MessageUtils.printFullStackTraceWithExit("Не удалось загрузить файл " + downloaderFile.getPath().getFileName().toString(), e);
                 }
 
-                if (downloaderFile.getUrl().contains("Updater.")) {
+                if (key.equals("updater")) {
 
                     updaterExecutor.repaintFrame();
 
@@ -84,7 +84,7 @@ public class UpdateThread extends Thread {
                 runtimeExecutableFilePath.set(((DownloaderRuntimeArchiveFile) downloaderFile).getRuntimeExecutableFile());
             }
 
-            if (downloaderFile.getUrl().contains("Launcher.")) {
+            if (key.equals("launcher")) {
                 launcherExecutableFilePath.set(downloaderFile.getPath());
             }
         });
