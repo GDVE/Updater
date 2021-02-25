@@ -4,8 +4,8 @@ import ru.simplemc.updater.Settings;
 import ru.simplemc.updater.config.Config;
 import ru.simplemc.updater.gui.border.DropShadowBorder;
 import ru.simplemc.updater.utils.OSUtils;
-import ru.simplemc.updater.utils.ResourcesUtils;
 import ru.simplemc.updater.utils.ProgramUtils;
+import ru.simplemc.updater.utils.ResourcesUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,7 +16,9 @@ import java.awt.event.MouseMotionAdapter;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 import static ru.simplemc.updater.Settings.BACKGROUND_IMAGE;
 
@@ -184,53 +186,31 @@ public class Frame extends JFrame {
 
         if (launcherConfig != null && launcherConfig.hasProperty("launcherSelectedTheme")) {
 
-            String themeName = launcherConfig.getProperty("launcherSelectedTheme").replace("Тема оформления: ", "");
+            Map<String, String> backgroundByName = new HashMap<>();
+            backgroundByName.put("Осень", "fall");
+            backgroundByName.put("Каньон", "canyon");
+            backgroundByName.put("Ночное небо", "night");
+            backgroundByName.put("Рассвет", "dawn");
+            backgroundByName.put("Озеро", "lake");
+            backgroundByName.put("Крепость", "fortress");
+            backgroundByName.put("Закат", "sunset");
+            backgroundByName.put("Лес", "forest");
+            backgroundByName.put("Зима", "winter");
+            backgroundByName.put("Весна", "spring");
 
-            switch (themeName) {
-                case "Осень":
-                    BACKGROUND_IMAGE = "fall";
-                    break;
-                case "Каньон":
-                    BACKGROUND_IMAGE = "canyon";
-                    break;
-                case "Ночное небо":
-                    BACKGROUND_IMAGE = "night";
-                    break;
-                case "Рассвет":
-                    BACKGROUND_IMAGE = "dawn";
-                    break;
-                case "Озеро":
-                    BACKGROUND_IMAGE = "lake";
-                    break;
-                case "Крепость":
-                    BACKGROUND_IMAGE = "fortress";
-                    break;
-                case "Закат":
-                    BACKGROUND_IMAGE = "sunset";
-                    break;
-                case "Лес":
-                    BACKGROUND_IMAGE = "forest";
-                    break;
-                case "Зима":
-                    BACKGROUND_IMAGE = "winter";
-                    break;
-                default:
-                    BACKGROUND_IMAGE = "spring";
-                    break;
-            }
+            BACKGROUND_IMAGE = backgroundByName.getOrDefault(
+                    launcherConfig.getProperty("launcherSelectedTheme").replace("Тема оформления: ", ""),
+                    BACKGROUND_IMAGE
+            );
         }
 
         // Проверка времени суток (необходимо для некоторых тем оформления)
         if (BACKGROUND_IMAGE.equals("winter") || BACKGROUND_IMAGE.equals("spring")) {
 
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH");
-            String currentHour = simpleDateFormat.format(System.currentTimeMillis());
+            int currentHour = LocalDateTime.now().getHour();
 
-            for (String nightHour : Settings.NIGHT_HOURS) {
-                if (currentHour.equals(nightHour)) {
-                    BACKGROUND_IMAGE = BACKGROUND_IMAGE.replace(BACKGROUND_IMAGE, BACKGROUND_IMAGE + "_night");
-                    break;
-                }
+            if (currentHour >= 20 || currentHour <= 5) {
+                BACKGROUND_IMAGE = BACKGROUND_IMAGE.replace(BACKGROUND_IMAGE, BACKGROUND_IMAGE + "_night");
             }
         }
     }
