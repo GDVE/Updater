@@ -65,13 +65,13 @@ public class HTTPUtils {
             bufferedReader.close();
 
             return stringBuffer.toString();
-
-        } catch (SSLException e) {
-            if (disableSSLCertificatesChecks()) return post(path, params);
-            else throw e;
         } catch (Exception e) {
-            if (switchToHTTPS()) return post(path, params);
-            else throw e;
+            if (getProtocol().equals("https") && disableSSLCertificatesChecks()) {
+                return post(path, params);
+            } else if (switchToHTTPS()) {
+                return post(path, params);
+            } else
+                throw e;
         }
     }
 
