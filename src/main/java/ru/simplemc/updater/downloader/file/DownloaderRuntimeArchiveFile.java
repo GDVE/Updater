@@ -1,11 +1,11 @@
 package ru.simplemc.updater.downloader.file;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.rauschig.jarchivelib.Archiver;
 import org.rauschig.jarchivelib.ArchiverFactory;
 import ru.simplemc.updater.gui.utils.MessageUtils;
+import ru.simplemc.updater.thread.data.FileInfo;
 import ru.simplemc.updater.utils.CompressedUtils;
 import ru.simplemc.updater.utils.FileUtils;
 import ru.simplemc.updater.utils.OSUtils;
@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DownloaderRuntimeArchiveFile extends DownloaderFile {
 
@@ -23,8 +25,8 @@ public class DownloaderRuntimeArchiveFile extends DownloaderFile {
     private final Path runtimeExecutableFile;
     private final Path runtimeFilesScheme;
 
-    public DownloaderRuntimeArchiveFile(JSONObject fileInfoJSON) throws ClassCastException {
-        super(fileInfoJSON);
+    public DownloaderRuntimeArchiveFile(FileInfo fileInfo) throws ClassCastException {
+        super(fileInfo);
         Path runtimesStorage = Paths.get(ProgramUtils.getStoragePath() + "/runtime");
         this.runtimeDirectory = Paths.get(runtimesStorage + "/" + (OSUtils.isMacOS() ? "jre1.8.0_51.jre" : "jre1.8.0_51"));
         this.runtimeExecutableFile = Paths.get(runtimeDirectory + (OSUtils.isMacOS() ? "/Contents/Home/bin/" : "/bin/") + (OSUtils.isWindows() ? "java.exe" : "java"));
@@ -54,9 +56,7 @@ public class DownloaderRuntimeArchiveFile extends DownloaderFile {
      * @throws IOException - возвращает при невозможности записи файла-схемы
      */
     private void createFilesScheme() throws IOException {
-
-        JSONObject filesScheme = new JSONObject();
-
+        Map<String, Long> filesScheme = new HashMap<>();
         Files.walk(runtimeDirectory).filter(Files::isRegularFile).forEach(path -> {
             try {
                 filesScheme.put(path.toString().replace(runtimeDirectory.toString(), ""), Files.size(path));
@@ -64,8 +64,7 @@ public class DownloaderRuntimeArchiveFile extends DownloaderFile {
                 e.printStackTrace();
             }
         });
-
-        Files.write(runtimeFilesScheme, filesScheme.toString().getBytes());
+        Files.write(runtimeFilesScheme, new ObjectMapper().writeValueAsBytes(filesScheme));
     }
 
     @Override
@@ -86,25 +85,21 @@ public class DownloaderRuntimeArchiveFile extends DownloaderFile {
         }
 
         try {
-
-            JSONObject jsonObject = (JSONObject) new JSONParser().parse(new String(Files.readAllBytes(this.runtimeFilesScheme)));
-
+            Map<String, Long> jsonObject = new ObjectMapper().readValue(new String(Files.readAllBytes(this.runtimeFilesScheme)), new TypeReference<Map<String, Long>>() {
+            });
             if (jsonObject.size() < 10) {
                 MessageUtils.printWarning("Обнаружена проблема", "Недостаточно исполняемых файлов Java!");
                 return true;
             }
 
-            for (Object filePath : jsonObject.keySet()) {
-
+            for (String filePath : jsonObject.keySet()) {
                 Path runtimeFilePath = Paths.get(runtimeDirectory + "/" + filePath);
-
-                if (!Files.exists(runtimeFilePath) || Files.size(runtimeFilePath) != Long.parseLong(jsonObject.get(filePath).toString())) {
+                if (!Files.exists(runtimeFilePath) || Files.size(runtimeFilePath) != jsonObject.get(filePath)) {
                     MessageUtils.printWarning("Обнаружена проблема", "Найден невалидный файл Java:\n" + runtimeFilePath);
                     return true;
                 }
             }
-
-        } catch (IOException | ParseException e) {
+        } catch (IOException e) {
             MessageUtils.printFullStackTraceWithExit("Не удалось проверить исполняемые файлы Java!", e);
             return true;
         }

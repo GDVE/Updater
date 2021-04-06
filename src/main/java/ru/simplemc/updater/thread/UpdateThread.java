@@ -1,13 +1,16 @@
 package ru.simplemc.updater.thread;
 
-import org.json.simple.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import ru.simplemc.updater.Settings;
 import ru.simplemc.updater.downloader.Downloader;
-import ru.simplemc.updater.downloader.file.DownloaderFile;
+import ru.simplemc.updater.downloader.file.DownloaderFileType;
 import ru.simplemc.updater.downloader.file.DownloaderRuntimeArchiveFile;
 import ru.simplemc.updater.executor.LauncherExecutor;
 import ru.simplemc.updater.executor.UpdaterExecutor;
 import ru.simplemc.updater.gui.Frame;
 import ru.simplemc.updater.gui.utils.MessageUtils;
+import ru.simplemc.updater.thread.data.UpdaterRequest;
+import ru.simplemc.updater.thread.data.UpdaterResponse;
 import ru.simplemc.updater.utils.HTTPUtils;
 import ru.simplemc.updater.utils.OSUtils;
 import ru.simplemc.updater.utils.ProgramUtils;
@@ -30,60 +33,42 @@ public class UpdateThread extends Thread {
     @Override
     public void run() {
 
-        JSONObject updateData = getUpdateData();
+        UpdaterResponse response = getUpdaterServerResponse();
 
-        if (updateData == null) {
+        if (response == null) {
             MessageUtils.printErrorWithShutdown("Ошибка при обработке данных от сервера", "Неудалось обработать ни один параметр...");
-            return;
-        }
-
-        if (updateData.containsKey("title") && updateData.containsKey("message")) {
-            MessageUtils.printErrorWithShutdown(String.valueOf(updateData.get("title")), String.valueOf(updateData.get("message")));
             return;
         }
 
         AtomicReference<Path> runtimeExecutableFilePath = new AtomicReference<>();
         AtomicReference<Path> launcherExecutableFilePath = new AtomicReference<>();
 
-        updateData.forEach((key, value) -> {
-
-            if (!(value instanceof JSONObject)) {
-                throw new IllegalArgumentException("Value is not JSONObject, skipping it...");
-            }
-
-            if (key.equals("updater") && ProgramUtils.isDebugMode()) {
-                return;
-            }
-
-            DownloaderFile downloaderFile = key.equals("runtime") ? new DownloaderRuntimeArchiveFile((JSONObject) value) : new DownloaderFile((JSONObject) value);
-
+        response.getDownloaderFiles().forEach(downloaderFile -> {
             if (downloaderFile.isInvalid()) {
-
+                if (downloaderFile.getType().equals(DownloaderFileType.UPDATER) && ProgramUtils.isDebugMode()) {
+                    return;
+                }
                 try {
-                    new Downloader(frame, downloaderFile).process();
+                    new Downloader(this.frame, downloaderFile).process();
                 } catch (Exception e) {
                     MessageUtils.printFullStackTraceWithExit("Не удалось загрузить файл " + downloaderFile.getPath().getFileName().toString(), e);
                 }
 
-                if (key.equals("updater")) {
-
-                    updaterExecutor.repaintFrame();
-
+                if (downloaderFile.getType().equals(DownloaderFileType.UPDATER)) {
+                    this.updaterExecutor.repaintFrame();
                     try {
-                        updaterExecutor.execute();
+                        this.updaterExecutor.execute();
                     } catch (IOException e) {
                         MessageUtils.printFullStackTraceWithExit("Не удалось перезапустить программу!", e);
                     }
-
-                    return;
                 }
             }
 
-            if (downloaderFile instanceof DownloaderRuntimeArchiveFile) {
+            if (downloaderFile.getType().equals(DownloaderFileType.RUNTIME)) {
                 runtimeExecutableFilePath.set(((DownloaderRuntimeArchiveFile) downloaderFile).getRuntimeExecutableFile());
             }
 
-            if (key.equals("launcher")) {
+            if (downloaderFile.getType().equals(DownloaderFileType.LAUNCHER)) {
                 launcherExecutableFilePath.set(downloaderFile.getPath());
             }
         });
@@ -96,14 +81,15 @@ public class UpdateThread extends Thread {
         }
     }
 
-    private JSONObject getUpdateData() {
+    private UpdaterResponse getUpdaterServerResponse() {
 
-        JSONObject updaterParams = new JSONObject();
-        updaterParams.put("updater_format", ProgramUtils.getExecutableFileExtension());
-        updaterParams.put("system_id", OSUtils.getSystemIdWithArch());
+        UpdaterRequest updaterRequest = new UpdaterRequest();
+        updaterRequest.setSystemId(OSUtils.getSystemIdWithArch());
+        updaterRequest.setApplicationFormat(ProgramUtils.getExecutableFileExtension());
 
         try {
-            return HTTPUtils.post("/launcher/updater.php", updaterParams);
+            ObjectMapper objectMapper = new ObjectMapper();
+            return objectMapper.readValue(HTTPUtils.post(Settings.API_DOMAIN, "/launcher/updater/check", updaterRequest), UpdaterResponse.class);
         } catch (Exception e) {
             MessageUtils.printFullStackTraceWithExit("Не удалось получить ответ от сервера!", e);
             return null;

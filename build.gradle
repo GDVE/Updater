@@ -7,6 +7,8 @@ plugins {
 
     // https://github.com/TheBoegl/gradle-launch4j
     id 'edu.sc.seis.launch4j' version '2.4.6'
+
+    id 'application'
 }
 
 repositories {
@@ -17,18 +19,16 @@ repositories {
 archivesBaseName = 'SimpleMinecraft'
 group = 'ru.simplemc'
 version = '1.0'
-
-ext {
-    mainClassName = 'ru.simplemc.updater.Updater'
-}
+mainClassName = 'ru.simplemc.updater.Updater'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 dependencies {
     compile group: 'org.rauschig', name: 'jarchivelib', version: '1.0.0'
-    compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
-    //compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.2'
+    compile 'org.projectlombok:lombok:1.18.16'
+    annotationProcessor 'org.projectlombok:lombok:1.18.16'
 }
 
 tasks.withType(JavaCompile) {
@@ -40,9 +40,8 @@ tasks.withType(Jar) {
 }
 
 jar {
-    enabled = false // Disable creating archive here. Use shadowJar to create JAR with libraries
     manifest {
-        attributes 'Main-Class': project.ext.mainClassName
+        attributes 'Main-Class': mainClassName
     }
 }
 
@@ -55,7 +54,7 @@ shadowJar {
 launch4j {
     version = '1.0.0.0'
     textVersion = project.version
-    mainClassName = project.ext.mainClassName
+    mainClassName = mainClassName
     icon = "${projectDir}/icon.ico"
     jar = shadowJar.archivePath
     errTitle = 'SimpleMinecraft.Ru'
@@ -66,7 +65,7 @@ launch4j {
     fileDescription = 'SMC Starter program'
     productName = 'SMC Starter'
     internalName = 'SMC Starter'
-    outfile = 'SimpleMinecraft.exe'
+    outfile = archivesBaseName + '.exe'
 }
 
 // Task dependency

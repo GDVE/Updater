@@ -1,5 +1,6 @@
 package ru.simplemc.updater.downloader;
 
+import ru.simplemc.updater.Settings;
 import ru.simplemc.updater.downloader.file.DownloaderFile;
 import ru.simplemc.updater.downloader.file.DownloaderRuntimeArchiveFile;
 import ru.simplemc.updater.gui.Frame;
@@ -12,6 +13,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+
+import static ru.simplemc.updater.Settings.API_DOMAIN;
 
 public class Downloader {
 
@@ -37,7 +40,7 @@ public class Downloader {
         this.progressBar.setVisible(true);
         this.downloaderFile.prepareBeforeDownload();
 
-        HttpURLConnection connection = HTTPUtils.openConnection("GET", downloaderFile.getUrl());
+        HttpURLConnection connection = HTTPUtils.openConnection("", downloaderFile.getUrl(), "GET");
         connection.disconnect();
 
         InputStream inputStream = new BufferedInputStream(connection.getInputStream());
@@ -56,6 +59,8 @@ public class Downloader {
         inputStream.close();
         fileOutputStream.close();
         this.progressBar.setVisible(false);
+
+        System.out.println("File saved at: " + this.downloaderFile.getPath());
 
         if (downloaderFile instanceof DownloaderRuntimeArchiveFile) {
             downloaderPane.setStatusAndDescription("Распаковка архива", downloaderFile.getPath().getFileName().toString());

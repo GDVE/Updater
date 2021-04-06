@@ -1,6 +1,7 @@
 package ru.simplemc.updater.downloader.file;
 
-import org.json.simple.JSONObject;
+import lombok.Getter;
+import ru.simplemc.updater.thread.data.FileInfo;
 import ru.simplemc.updater.utils.CryptUtils;
 import ru.simplemc.updater.utils.ProgramUtils;
 
@@ -11,33 +12,24 @@ import java.nio.file.Paths;
 
 public class DownloaderFile {
 
+    @Getter
     private final Path path;
+    @Getter
+    private final DownloaderFileType type;
+    @Getter
     private final String url;
+    @Getter
     private final long size;
+    @Getter
     private final String md5;
 
-    public DownloaderFile(JSONObject fileInfoJSON) {
-        this.path = fileInfoJSON.get("path").equals("%updater_path%") ? ProgramUtils.getProgramPath() : Paths.get(ProgramUtils.getStoragePath() + "/" + fileInfoJSON.get("path"));
-        this.url = String.valueOf(fileInfoJSON.get("url")).replaceAll(" ", "%20");
-        this.size = Long.parseLong(String.valueOf(fileInfoJSON.get("size")));
-        this.md5 = String.valueOf(fileInfoJSON.get("md5"));
-    }
-
-    public Path getPath() {
-        return path;
-    }
-
-    public String getUrl() {
-
-        if (url.endsWith(".jar") || url.endsWith(".exe")) {
-            return url + "?time=" + System.currentTimeMillis();
-        }
-
-        return url;
-    }
-
-    public long getSize() {
-        return size;
+    public DownloaderFile(FileInfo fileInfo) {
+        System.out.println(fileInfo.getUrl());
+        this.type = fileInfo.getUrl().contains("/runtime/") ? DownloaderFileType.RUNTIME : fileInfo.getUrl().contains("SimpleMinecraft.") ? DownloaderFileType.UPDATER : DownloaderFileType.LAUNCHER;
+        this.path = this.type.equals(DownloaderFileType.UPDATER) ? ProgramUtils.getProgramPath() : Paths.get(ProgramUtils.getStoragePath() + fileInfo.getPath().replace("/program/", "/"));
+        this.url = fileInfo.getUrl();
+        this.size = fileInfo.getSize();
+        this.md5 = fileInfo.getMd5();
     }
 
     /**
