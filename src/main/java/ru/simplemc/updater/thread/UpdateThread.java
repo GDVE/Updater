@@ -50,6 +50,13 @@ public class UpdateThread extends Thread {
                     return;
                 }
 
+                if (downloaderFile.getType().equals(DownloaderFileType.UPDATER) && OSUtils.isMacOS()) {
+                    MessageUtils.printSuccess("Вышло обновление программы!", "Для вас доступна новая версия программы! Скачайте ее с нашего сайта.\nПосле нажатия кнопки ОК откроется страница загрузки программы.");
+                    OSUtils.openLinkInSystemBrowser("https://simpleminecraft.ru/download.html");
+                    ProgramUtils.haltProgram();
+                    return;
+                }
+
                 try {
                     new Downloader(this.frame, downloaderFile).process();
                 } catch (Exception e) {

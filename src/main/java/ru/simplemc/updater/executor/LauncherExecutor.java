@@ -26,6 +26,7 @@ public class LauncherExecutor implements ApplicationExecutor {
 
         List<String> processPrams = new ArrayList<>();
         processPrams.add(runtimeExecutableFilePath);
+        processPrams.add("-Xdock:name=SLauncher");
         processPrams.add("-jar");
         processPrams.add(launcherExecutableFilePath);
 

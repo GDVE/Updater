@@ -16,8 +16,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFileAttributes;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class DownloaderRuntimeArchiveFile extends DownloaderFile {
 
@@ -48,6 +51,20 @@ public class DownloaderRuntimeArchiveFile extends DownloaderFile {
 
         Files.deleteIfExists(this.getPath());
         this.createFilesScheme();
+
+        try {
+            Files.walk(this.runtimeDirectory).filter(Files::isRegularFile).forEach(path -> {
+                try {
+                    Set<PosixFilePermission> perms = Files.readAttributes(path, PosixFileAttributes.class).permissions();
+                    perms.add(PosixFilePermission.OWNER_WRITE);
+                    perms.add(PosixFilePermission.OWNER_READ);
+                    perms.add(PosixFilePermission.OWNER_EXECUTE);
+                    Files.setPosixFilePermissions(path, perms);
+                } catch (IOException ignored) {
+                }
+            });
+        } catch (IOException ignored) {
+        }
     }
 
     /**
