@@ -32,12 +32,10 @@ public class Frame extends JFrame {
     public Frame() {
 
         try {
-
             Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
             Field awtAppClassNameField = defaultToolkit.getClass().getDeclaredField("awtAppClassName");
             awtAppClassNameField.setAccessible(true);
             awtAppClassNameField.set(defaultToolkit, Settings.FRAME_TITLE);
-
         } catch (Throwable ignored) {
         }
 

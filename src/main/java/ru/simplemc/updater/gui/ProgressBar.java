@@ -11,7 +11,6 @@ public class ProgressBar extends JProgressBar {
 
     public ProgressBar(int height) {
 
-        setFont(ResourcesUtils.getFont("FSElliotPro-Bold", 12));
         setMinimum(0);
         setMaximum(100);
         setString("0%");

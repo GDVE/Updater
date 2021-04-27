@@ -13,14 +13,6 @@ public class StartupPane extends JPanel {
     public StartupPane() {
         status = "ВСЕ ГОТОВО!";
         description = "Запускаю лаунчер...";
-        /*
-        ImageIcon imageIcon = ResourcesUtils.getImageIcon("animations/success.gif");
-        JLabel loadingIconLabel = new JLabel();
-        loadingIconLabel.setIcon(imageIcon);
-        loadingIconLabel.setBounds(Settings.FRAME_WIDTH / 2 - imageIcon.getIconWidth() / 2, 64, 64, 64);
-        imageIcon.setImageObserver(loadingIconLabel);
-        add(loadingIconLabel);
-         */
     }
 
     @Override

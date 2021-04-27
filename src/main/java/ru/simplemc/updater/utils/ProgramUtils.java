@@ -27,14 +27,13 @@ public class ProgramUtils {
      */
     public static String getProgramMD5Hash() {
 
-        Path launcherPath = getProgramPath();
+        Path programPath = getProgramPath();
 
-        if (launcherPath != null) {
-
-            if (launcherPath.endsWith("classes/java/main"))
+        if (programPath != null) {
+            if (programPath.endsWith("classes/java/main"))
                 return "4f9b53500448cf766c81c7e68d614283";
             else
-                return CryptUtils.md5(launcherPath);
+                return CryptUtils.md5(programPath);
         }
 
         MessageUtils.printErrorWithShutdown("Ошибка доступа к файлу лаунчера", "Не удалось определить контрольную сумму лаунчера.");

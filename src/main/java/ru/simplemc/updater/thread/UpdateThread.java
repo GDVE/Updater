@@ -45,9 +45,11 @@ public class UpdateThread extends Thread {
 
         response.getDownloaderFiles().forEach(downloaderFile -> {
             if (downloaderFile.isInvalid()) {
+
                 if (downloaderFile.getType().equals(DownloaderFileType.UPDATER) && ProgramUtils.isDebugMode()) {
                     return;
                 }
+
                 try {
                     new Downloader(this.frame, downloaderFile).process();
                 } catch (Exception e) {

@@ -21,21 +21,6 @@ public class GraphicsUtils {
         graphics2D.drawString(text, x, y);
     }
 
-    public static void drawCenteredString(Graphics2D graphics2D, Rectangle rect, float fontSize, String fontName, String color, String text) {
-
-        Font font = ResourcesUtils.getFont(fontName, fontSize);
-        FontMetrics metrics = graphics2D.getFontMetrics(font);
-        int x = rect.x + (rect.width - metrics.stringWidth(text)) / 2;
-        int y = rect.y + ((rect.height - metrics.getHeight()) / 2) + metrics.getAscent();
-
-        if (OSUtils.isLinux())
-            x = x - Settings.FRAME_SHADOW_SIZE;
-
-        graphics2D.setColor(Color.decode("#" + color));
-        graphics2D.setFont(font);
-        graphics2D.drawString(text, x, y);
-    }
-
     public static void drawBackground(Graphics2D graphics2D, JPanel panel) {
 
         BufferedImage bufferedImage = ResourcesUtils.getBufferedImage("backgrounds/background_" + Settings.BACKGROUND_IMAGE + ".png");
