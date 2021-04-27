@@ -2,6 +2,7 @@ package ru.simplemc.updater.executor;
 
 import ru.simplemc.updater.gui.Frame;
 import ru.simplemc.updater.gui.pane.StartupPane;
+import ru.simplemc.updater.utils.OSUtils;
 import ru.simplemc.updater.utils.ProgramUtils;
 
 import java.io.BufferedReader;
@@ -26,7 +27,7 @@ public class LauncherExecutor implements ApplicationExecutor {
 
         List<String> processPrams = new ArrayList<>();
         processPrams.add(runtimeExecutableFilePath);
-        processPrams.add("-Xdock:name=SLauncher");
+        if (OSUtils.isMacOS()) processPrams.add("-Xdock:name=SLauncher");
         processPrams.add("-jar");
         processPrams.add(launcherExecutableFilePath);
 
