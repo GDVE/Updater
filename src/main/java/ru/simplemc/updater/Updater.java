@@ -1,8 +1,8 @@
 package ru.simplemc.updater;
 
-import ru.simplemc.updater.thread.UpdateThread;
 import ru.simplemc.updater.gui.Frame;
 import ru.simplemc.updater.gui.pane.WelcomePane;
+import ru.simplemc.updater.thread.UpdateThread;
 import ru.simplemc.updater.utils.ProgramUtils;
 
 public class Updater {

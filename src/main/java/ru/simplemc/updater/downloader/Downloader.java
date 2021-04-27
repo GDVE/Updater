@@ -1,6 +1,5 @@
 package ru.simplemc.updater.downloader;
 
-import ru.simplemc.updater.Settings;
 import ru.simplemc.updater.downloader.file.DownloaderFile;
 import ru.simplemc.updater.downloader.file.DownloaderRuntimeArchiveFile;
 import ru.simplemc.updater.gui.Frame;
@@ -13,8 +12,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-
-import static ru.simplemc.updater.Settings.API_DOMAIN;
 
 public class Downloader {
 

@@ -35,6 +35,7 @@ public class LauncherExecutor implements ApplicationExecutor {
 
     /**
      * Наблюдаем за процессом лаунчера, ждем от него заветного слова и выключаемся :)
+     *
      * @param process - запущенный процесс лаунчера
      */
     private void spectateForProcess(Process process) {
