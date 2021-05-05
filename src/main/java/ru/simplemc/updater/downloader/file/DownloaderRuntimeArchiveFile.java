@@ -52,18 +52,20 @@ public class DownloaderRuntimeArchiveFile extends DownloaderFile {
         Files.deleteIfExists(this.getPath());
         this.createFilesScheme();
 
-        try {
-            Files.walk(this.runtimeDirectory).filter(Files::isRegularFile).forEach(path -> {
-                try {
-                    Set<PosixFilePermission> perms = Files.readAttributes(path, PosixFileAttributes.class).permissions();
-                    perms.add(PosixFilePermission.OWNER_WRITE);
-                    perms.add(PosixFilePermission.OWNER_READ);
-                    perms.add(PosixFilePermission.OWNER_EXECUTE);
-                    Files.setPosixFilePermissions(path, perms);
-                } catch (IOException ignored) {
-                }
-            });
-        } catch (IOException ignored) {
+        if (OSUtils.isMacOS()) {
+            try {
+                Files.walk(this.runtimeDirectory).filter(Files::isRegularFile).forEach(path -> {
+                    try {
+                        Set<PosixFilePermission> perms = Files.readAttributes(path, PosixFileAttributes.class).permissions();
+                        perms.add(PosixFilePermission.OWNER_WRITE);
+                        perms.add(PosixFilePermission.OWNER_READ);
+                        perms.add(PosixFilePermission.OWNER_EXECUTE);
+                        Files.setPosixFilePermissions(path, perms);
+                    } catch (IOException ignored) {
+                    }
+                });
+            } catch (IOException ignored) {
+            }
         }
     }
 
