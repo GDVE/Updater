@@ -185,16 +185,16 @@ public class Frame extends JFrame {
         if (launcherConfig != null && launcherConfig.hasProperty("launcherSelectedTheme")) {
 
             Map<String, String> backgroundByName = new HashMap<>();
+            backgroundByName.put("Лето", "summer");
+            backgroundByName.put("Весна", "spring");
+            backgroundByName.put("Зима", "winter");
             backgroundByName.put("Осень", "fall");
             backgroundByName.put("Каньон", "canyon");
             backgroundByName.put("Ночное небо", "night");
             backgroundByName.put("Рассвет", "dawn");
             backgroundByName.put("Озеро", "lake");
-            backgroundByName.put("Крепость", "fortress");
             backgroundByName.put("Закат", "sunset");
             backgroundByName.put("Лес", "forest");
-            backgroundByName.put("Зима", "winter");
-            backgroundByName.put("Весна", "spring");
 
             BACKGROUND_IMAGE = backgroundByName.getOrDefault(
                     launcherConfig.getProperty("launcherSelectedTheme").replace("Тема оформления: ", ""),
@@ -203,7 +203,7 @@ public class Frame extends JFrame {
         }
 
         // Проверка времени суток (необходимо для некоторых тем оформления)
-        if (BACKGROUND_IMAGE.equals("winter") || BACKGROUND_IMAGE.equals("spring")) {
+        if (BACKGROUND_IMAGE.equals("winter") || BACKGROUND_IMAGE.equals("spring") || BACKGROUND_IMAGE.equals("summer")) {
 
             int currentHour = LocalDateTime.now().getHour();
 

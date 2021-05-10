@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class ResourcesUtils {
 
@@ -68,7 +69,7 @@ public class ResourcesUtils {
             BufferedImage bufferedImage = new BufferedImage(1, 1, 2);
 
             try {
-                bufferedImage = ImageIO.read(ResourcesUtils.class.getResource(path));
+                bufferedImage = ImageIO.read(Objects.requireNonNull(ResourcesUtils.class.getResource(path)));
             } catch (Exception e) {
                 System.out.println("Неудалось загрузить изображение:");
                 e.printStackTrace();
