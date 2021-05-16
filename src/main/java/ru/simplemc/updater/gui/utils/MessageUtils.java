@@ -19,11 +19,8 @@ public class MessageUtils {
     }
 
     public static void printErrorWithShutdown(String title, String message, boolean needShutdown) {
-
         JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
-
-        if (needShutdown)
-            ProgramUtils.haltProgram();
+        if (needShutdown) ProgramUtils.haltProgram();
     }
 
     public static void printException(String title, String message, Exception exception) {
@@ -85,7 +82,7 @@ public class MessageUtils {
             copyButton.addActionListener(e -> OSUtils.copyToClipboard(textArea.getText()));
 
             Button reportButton = new Button("Сообщить администрации");
-            reportButton.addActionListener(e -> OSUtils.openLinkInSystemBrowser("https://vk.com/gim56175786"));
+            reportButton.addActionListener(e -> OSUtils.openLinkInSystemBrowser("https://f.simpleminecraft.ru/index.php?/topic/24436-reshenie-problem-s-s-launcherom-30/"));
 
             panel.add(new Label(message));
             panel.add(textArea);
