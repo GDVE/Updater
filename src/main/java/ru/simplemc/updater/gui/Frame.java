@@ -53,7 +53,8 @@ public class Frame extends JFrame {
         setResizable(false);
 
         if (OSUtils.isLinux()) {
-            setPreferredSize(new Dimension(Settings.FRAME_WIDTH - Settings.FRAME_SHADOW_SIZE * 2, Settings.FRAME_HEIGHT - Settings.FRAME_SHADOW_SIZE * 2));
+            setPreferredSize(new Dimension(Settings.FRAME_WIDTH - Settings.FRAME_SHADOW_SIZE * 2,
+                    Settings.FRAME_HEIGHT - Settings.FRAME_SHADOW_SIZE * 2));
         } else
             setPreferredSize(new Dimension(Settings.FRAME_WIDTH, Settings.FRAME_HEIGHT));
 
@@ -100,8 +101,12 @@ public class Frame extends JFrame {
         pane.add(exitButton);
         pane.add(minimizeButton);
 
-        if (!OSUtils.isLinux())
-            pane.setBorder(new DropShadowBorder(new Color(0, 0, 0, 0), 5, Settings.FRAME_SHADOW_SIZE, 0.15F, 5, true, true, true, true));
+        if (OSUtils.isWindows())
+            pane.setBorder(new DropShadowBorder(new Color(0x0, true), 5,
+                    Settings.FRAME_SHADOW_SIZE,
+                    0.15F,
+                    5,
+                    true, true, true, true));
 
         pane.setOpaque(false);
         pane.setLayout(new BorderLayout());
