@@ -53,19 +53,7 @@ public class DownloaderRuntimeArchiveFile extends DownloaderFile {
         this.createFilesScheme();
 
         if (OSUtils.isMacOS()) {
-            try {
-                Files.walk(this.runtimeDirectory).filter(Files::isRegularFile).forEach(path -> {
-                    try {
-                        Set<PosixFilePermission> perms = Files.readAttributes(path, PosixFileAttributes.class).permissions();
-                        perms.add(PosixFilePermission.OWNER_WRITE);
-                        perms.add(PosixFilePermission.OWNER_READ);
-                        perms.add(PosixFilePermission.OWNER_EXECUTE);
-                        Files.setPosixFilePermissions(path, perms);
-                    } catch (IOException ignored) {
-                    }
-                });
-            } catch (IOException ignored) {
-            }
+            this.resolveFilesPermissions();
         }
     }
 
@@ -131,5 +119,26 @@ public class DownloaderRuntimeArchiveFile extends DownloaderFile {
      */
     public Path getRuntimeExecutableFile() {
         return runtimeExecutableFile;
+    }
+
+    /**
+     * Необходимо для запуска лаунчера на MacOS при использовании свободных сборок JRE (azul, например)
+     */
+    public void resolveFilesPermissions() {
+        try {
+            Files.walk(this.runtimeDirectory).filter(Files::isRegularFile).forEach(path -> {
+                try {
+                    Set<PosixFilePermission> perms = Files.readAttributes(path, PosixFileAttributes.class).permissions();
+                    perms.add(PosixFilePermission.OWNER_WRITE);
+                    perms.add(PosixFilePermission.OWNER_READ);
+                    perms.add(PosixFilePermission.OWNER_EXECUTE);
+                    Files.setPosixFilePermissions(path, perms);
+                } catch (IOException e) {
+                    MessageUtils.printFullStackTraceWithExit("Не удалось установить права на исполняемые файлы", e, false);
+                }
+            });
+        } catch (IOException e) {
+            MessageUtils.printFullStackTraceWithExit("Не удалось запустить установку прав на исполняемые файлы", e, false);
+        }
     }
 }

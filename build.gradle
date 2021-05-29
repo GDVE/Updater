@@ -1,13 +1,7 @@
 plugins {
-    // Apply the java plugin to add support for Java
     id 'java'
-
-    // Analog of Maven Shade plugin https://imperceptiblethoughts.com/shadow/
     id 'com.github.johnrengelman.shadow' version '4.0.4'
-
-    // https://github.com/TheBoegl/gradle-launch4j
     id 'edu.sc.seis.launch4j' version '2.4.6'
-
     id 'application'
 }
 
@@ -15,7 +9,6 @@ repositories {
     mavenCentral()
 }
 
-// Project settings
 archivesBaseName = 'SimpleMinecraft'
 group = 'ru.simplemc'
 version = '1.0'
@@ -46,12 +39,10 @@ jar {
     }
 }
 
-/* Packed JAR with all libraries */
 shadowJar {
     classifier = null
 }
 
-/* Build *.exe */
 launch4j {
     version = '1.0.0.0'
     textVersion = project.version
