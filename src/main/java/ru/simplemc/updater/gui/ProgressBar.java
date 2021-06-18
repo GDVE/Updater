@@ -19,7 +19,7 @@ public class ProgressBar extends JProgressBar {
         setForeground(Color.decode("#92d246"));
         setBackground(Color.decode("#e7e7e6"));
 
-        if (OSUtils.isLinux())
+        if (OSUtils.isLinux() || OSUtils.isMacOS())
             setBounds(new Rectangle(40 - Settings.FRAME_SHADOW_SIZE, Settings.FRAME_HEIGHT - Settings.FRAME_SHADOW_SIZE - 32 - height, Settings.FRAME_WIDTH - Settings.FRAME_SHADOW_SIZE - 40 * 2, height));
         else
             setBounds(new Rectangle(40, Settings.FRAME_HEIGHT - Settings.FRAME_SHADOW_SIZE - 32 - height, Settings.FRAME_WIDTH - Settings.FRAME_SHADOW_SIZE - 40 * 2, height));

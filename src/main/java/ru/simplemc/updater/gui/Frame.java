@@ -52,7 +52,7 @@ public class Frame extends JFrame {
         setOpacity(1);
         setResizable(false);
 
-        if (OSUtils.isLinux()) {
+        if (OSUtils.isLinux() || OSUtils.isMacOS()) {
             setPreferredSize(new Dimension(Settings.FRAME_WIDTH - Settings.FRAME_SHADOW_SIZE * 2,
                     Settings.FRAME_HEIGHT - Settings.FRAME_SHADOW_SIZE * 2));
         } else
@@ -165,7 +165,7 @@ public class Frame extends JFrame {
         int axisX = Settings.FRAME_WIDTH - Settings.FRAME_SHADOW_SIZE - 48 * createdButtonsCount;
         int axisY = Settings.FRAME_SHADOW_SIZE;
 
-        if (OSUtils.isLinux()) {
+        if (OSUtils.isLinux() || OSUtils.isMacOS()) {
             axisX -= Settings.FRAME_SHADOW_SIZE;
             axisY -= Settings.FRAME_SHADOW_SIZE;
         }

@@ -15,7 +15,7 @@ public class GraphicsUtils {
         graphics2D.setColor(Color.decode("#" + color));
         graphics2D.setFont(ResourcesUtils.getFont(fontName, fontSize));
 
-        if (OSUtils.isLinux())
+        if (OSUtils.isLinux() || OSUtils.isMacOS())
             x = x - Settings.FRAME_SHADOW_SIZE;
 
         graphics2D.drawString(text, x, y);
@@ -25,7 +25,7 @@ public class GraphicsUtils {
 
         BufferedImage bufferedImage = ResourcesUtils.getBufferedImage("backgrounds/background_" + Settings.BACKGROUND_IMAGE + ".png");
 
-        if (OSUtils.isLinux())
+        if (OSUtils.isLinux() || OSUtils.isMacOS())
             graphics2D.drawImage(bufferedImage, 0, 0, Settings.FRAME_WIDTH, Settings.FRAME_HEIGHT, panel);
         else
             graphics2D.drawImage(bufferedImage, Settings.FRAME_SHADOW_SIZE, Settings.FRAME_SHADOW_SIZE, Settings.FRAME_WIDTH - Settings.FRAME_SHADOW_SIZE * 2, Settings.FRAME_HEIGHT - Settings.FRAME_SHADOW_SIZE * 2, panel);
