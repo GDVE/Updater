@@ -96,9 +96,19 @@ public class UpdateThread extends Thread {
         updaterRequest.setSystemId(OSUtils.getSystemIdWithArch());
         updaterRequest.setApplicationFormat(ProgramUtils.getExecutableFileExtension());
 
+        String httpResponse;
+
+        try {
+            httpResponse = HTTPUtils.post(Settings.API_DOMAIN, "/launcher/updater/check", updaterRequest);
+        } catch (Exception e) {
+            MessageUtils.printErrorWithShutdown("Ошибка при подключении к сайту",
+                    "Неудалось получить ответ от сайта.\nПопробуйте подключится позже.");
+            return null;
+        }
+
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            return objectMapper.readValue(HTTPUtils.post(Settings.API_DOMAIN, "/launcher/updater/check", updaterRequest), UpdaterResponse.class);
+            return objectMapper.readValue(httpResponse, UpdaterResponse.class);
         } catch (Exception e) {
             MessageUtils.printFullStackTraceWithExit("Не удалось получить ответ от сервера!", e);
             return null;

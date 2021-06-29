@@ -31,7 +31,7 @@ public class DownloaderRuntimeArchiveFile extends DownloaderFile {
     public DownloaderRuntimeArchiveFile(FileInfo fileInfo) throws ClassCastException {
         super(fileInfo);
         Path runtimesStorage = Paths.get(ProgramUtils.getStoragePath() + "/runtime");
-        this.runtimeDirectory = Paths.get(runtimesStorage + "/" + (OSUtils.isMacOS() ? "jre1.8.0_51.jre" : "jre1.8.0_51"));
+        this.runtimeDirectory = Paths.get(runtimesStorage + "/" + (OSUtils.isMacOS() ? "jre1.8.0_144.jre" : "jre1.8.0_144"));
         this.runtimeExecutableFile = Paths.get(runtimeDirectory + (OSUtils.isMacOS() ? "/Contents/Home/bin/" : "/bin/") + (OSUtils.isWindows() ? "java.exe" : "java"));
         this.runtimeFilesScheme = Paths.get(runtimesStorage + "/" + runtimeDirectory.getFileName().toString() + ".json");
     }

@@ -55,9 +55,8 @@ public class Downloader {
 
         inputStream.close();
         fileOutputStream.close();
-        this.progressBar.setVisible(false);
 
-        System.out.println("File saved at: " + this.downloaderFile.getPath());
+        this.progressBar.setVisible(false);
 
         if (downloaderFile instanceof DownloaderRuntimeArchiveFile) {
             downloaderPane.setStatusAndDescription("Распаковка архива", downloaderFile.getPath().getFileName().toString());
