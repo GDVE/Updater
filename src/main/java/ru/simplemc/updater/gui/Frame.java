@@ -1,7 +1,7 @@
 package ru.simplemc.updater.gui;
 
-import ru.simplemc.updater.Settings;
-import ru.simplemc.updater.config.Config;
+import ru.simplemc.updater.Environment;
+import ru.simplemc.updater.config.LauncherConfig;
 import ru.simplemc.updater.gui.border.DropShadowBorder;
 import ru.simplemc.updater.utils.OSUtils;
 import ru.simplemc.updater.utils.ProgramUtils;
@@ -15,19 +15,18 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.nio.file.Paths;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import static ru.simplemc.updater.Settings.BACKGROUND_IMAGE;
+import static ru.simplemc.updater.Environment.BACKGROUND_IMAGE;
 
 public class Frame extends JFrame {
 
-    private Point startClick;
-    private int createdButtonsCount;
     private final JLabel exitButton;
     private final JLabel minimizeButton;
+    private Point startClick;
+    private int createdButtonsCount;
+    private boolean isFirstSetPane = true;
 
     public Frame() {
 
@@ -35,13 +34,13 @@ public class Frame extends JFrame {
             Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
             Field awtAppClassNameField = defaultToolkit.getClass().getDeclaredField("awtAppClassName");
             awtAppClassNameField.setAccessible(true);
-            awtAppClassNameField.set(defaultToolkit, Settings.FRAME_TITLE);
+            awtAppClassNameField.set(defaultToolkit, Environment.FRAME_TITLE);
         } catch (Throwable ignored) {
         }
 
         setupBackgroundImage();
-        setTitle(Settings.FRAME_TITLE);
-        setName(Settings.FRAME_TITLE);
+        setTitle(Environment.FRAME_TITLE);
+        setName(Environment.FRAME_TITLE);
         setUndecorated(true);
 
         if (OSUtils.isLinux())
@@ -53,17 +52,17 @@ public class Frame extends JFrame {
         setResizable(false);
 
         if (OSUtils.isLinux() || OSUtils.isMacOS()) {
-            setPreferredSize(new Dimension(Settings.FRAME_WIDTH - Settings.FRAME_SHADOW_SIZE * 2,
-                    Settings.FRAME_HEIGHT - Settings.FRAME_SHADOW_SIZE * 2));
+            setPreferredSize(new Dimension(Environment.FRAME_WIDTH - Environment.FRAME_SHADOW_SIZE * 2,
+                    Environment.FRAME_HEIGHT - Environment.FRAME_SHADOW_SIZE * 2));
         } else
-            setPreferredSize(new Dimension(Settings.FRAME_WIDTH, Settings.FRAME_HEIGHT));
+            setPreferredSize(new Dimension(Environment.FRAME_WIDTH, Environment.FRAME_HEIGHT));
 
         setSize(this.getPreferredSize());
         setLayout(new BorderLayout());
 
         setLocationRelativeTo(null);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setIconImage(ResourcesUtils.getBufferedImage("icon.png"));
+        setIconImage(ResourcesUtils.getOrCreateBufferedImage("icon.png"));
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -101,21 +100,21 @@ public class Frame extends JFrame {
         pane.add(exitButton);
         pane.add(minimizeButton);
 
-        if (OSUtils.isWindows())
+        if (OSUtils.isWindows() && isFirstSetPane) {
             pane.setBorder(new DropShadowBorder(new Color(0x0, true), 5,
-                    Settings.FRAME_SHADOW_SIZE,
-                    0.15F,
+                    Environment.FRAME_SHADOW_SIZE,
+                    0.1F,
                     5,
                     true, true, true, true));
+            isFirstSetPane = false;
+        }
 
         pane.setOpaque(false);
         pane.setLayout(new BorderLayout());
-
         setContentPane(pane);
         pack();
 
-        if (!isVisible())
-            setVisible(true);
+        if (!isVisible()) setVisible(true);
     }
 
     /**
@@ -129,7 +128,7 @@ public class Frame extends JFrame {
 
         final JLabel systemButton = new JLabel();
 
-        systemButton.setIcon(ResourcesUtils.getImageIcon("button/" + actionType + ".png"));
+        systemButton.setIcon(ResourcesUtils.getOrCreateImageIcon("button/" + actionType + ".png"));
         systemButton.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -142,13 +141,13 @@ public class Frame extends JFrame {
             @Override
             public void mouseEntered(MouseEvent e) {
                 setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                systemButton.setIcon(ResourcesUtils.getImageIcon("button/" + actionType + "_hover.png"));
+                systemButton.setIcon(ResourcesUtils.getOrCreateImageIcon("button/" + actionType + "_hover.png"));
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
                 setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-                systemButton.setIcon(ResourcesUtils.getImageIcon("button/" + actionType + ".png"));
+                systemButton.setIcon(ResourcesUtils.getOrCreateImageIcon("button/" + actionType + ".png"));
             }
 
             @Override
@@ -162,12 +161,12 @@ public class Frame extends JFrame {
 
         createdButtonsCount++;
 
-        int axisX = Settings.FRAME_WIDTH - Settings.FRAME_SHADOW_SIZE - 48 * createdButtonsCount;
-        int axisY = Settings.FRAME_SHADOW_SIZE;
+        int axisX = Environment.FRAME_WIDTH - Environment.FRAME_SHADOW_SIZE - 48 * createdButtonsCount;
+        int axisY = Environment.FRAME_SHADOW_SIZE;
 
         if (OSUtils.isLinux() || OSUtils.isMacOS()) {
-            axisX -= Settings.FRAME_SHADOW_SIZE;
-            axisY -= Settings.FRAME_SHADOW_SIZE;
+            axisX -= Environment.FRAME_SHADOW_SIZE;
+            axisY -= Environment.FRAME_SHADOW_SIZE;
         }
 
         systemButton.setBounds(axisX, axisY, 48, 30);
@@ -179,42 +178,20 @@ public class Frame extends JFrame {
      */
     private void setupBackgroundImage() {
 
-        Config launcherConfig = null;
-
+        LauncherConfig launcherConfig = new LauncherConfig();
         try {
-            launcherConfig = new Config(Paths.get(ProgramUtils.getStoragePath() + "/launcher.conf"), false);
-        } catch (IOException e) {
+            launcherConfig.readFromDisk();
+        } catch (IOException | NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
         }
 
-        if (launcherConfig != null && launcherConfig.hasProperty("launcherSelectedTheme")) {
-
+        if (launcherConfig.getSelectedTheme() != null) {
             Map<String, String> backgroundByName = new HashMap<>();
-            backgroundByName.put("Лето", "summer");
-            backgroundByName.put("Весна", "spring");
-            backgroundByName.put("Зима", "winter");
-            backgroundByName.put("Осень", "fall");
-            backgroundByName.put("Каньон", "canyon");
-            backgroundByName.put("Ночное небо", "night");
-            backgroundByName.put("Рассвет", "dawn");
-            backgroundByName.put("Озеро", "lake");
-            backgroundByName.put("Закат", "sunset");
-            backgroundByName.put("Лес", "forest");
-
-            BACKGROUND_IMAGE = backgroundByName.getOrDefault(
-                    launcherConfig.getProperty("launcherSelectedTheme").replace("Тема оформления: ", ""),
-                    BACKGROUND_IMAGE
-            );
-        }
-
-        // Проверка времени суток (необходимо для некоторых тем оформления)
-        if (BACKGROUND_IMAGE.equals("winter") || BACKGROUND_IMAGE.equals("spring") || BACKGROUND_IMAGE.equals("summer")) {
-
-            int currentHour = LocalDateTime.now().getHour();
-
-            if (currentHour >= 20 || currentHour <= 5) {
-                BACKGROUND_IMAGE = BACKGROUND_IMAGE.replace(BACKGROUND_IMAGE, BACKGROUND_IMAGE + "_night");
-            }
+            backgroundByName.put("Тема оформления: Лес", "forest");
+            backgroundByName.put("Тема оформления: Берег", "lake");
+            backgroundByName.put("Тема оформления: Секретная база", "sweet_home");
+            backgroundByName.put("Тема оформления: Фабрика", "factory");
+            BACKGROUND_IMAGE = backgroundByName.getOrDefault(launcherConfig.getSelectedTheme(), "forest");
         }
     }
 }

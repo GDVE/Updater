@@ -6,7 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 
-public class FileUtils {
+public class FilesUtils {
 
     /**
      * Рекурсивно удаляет папки и файлы и вложенные в них файлы и папки
@@ -19,7 +19,7 @@ public class FileUtils {
 
                 Files.walk(path)
                         .sorted(Comparator.reverseOrder())
-                        .forEach(FileUtils::deleteFile);
+                        .forEach(FilesUtils::deleteFile);
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -42,7 +42,7 @@ public class FileUtils {
      */
     public static void deleteFile(Path path) {
         try {
-            Files.delete(path);
+            Files.deleteIfExists(path);
         } catch (IOException e) {
             System.out.println("Неудалось удалить файл: " + path);
             e.printStackTrace();

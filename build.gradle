@@ -21,6 +21,7 @@ dependencies {
     compile group: 'org.rauschig', name: 'jarchivelib', version: '1.0.0'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.2'
     implementation group: 'com.github.oshi', name: 'oshi-core', version: '5.7.1'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
     compile 'org.projectlombok:lombok:1.18.16'
     annotationProcessor 'org.projectlombok:lombok:1.18.16'
 }

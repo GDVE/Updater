@@ -27,12 +27,12 @@ public class LauncherExecutor implements ApplicationExecutor {
 
         List<String> processPrams = new ArrayList<>();
         processPrams.add(runtimeExecutableFilePath);
-        if (OSUtils.isMacOS()) processPrams.add("-Xdock:name=SLauncher");
+        if (OSUtils.isMacOS()) processPrams.add("-Xdock:name=SimpleMinecraft.Ru - Launcher");
         processPrams.add("-jar");
         processPrams.add(launcherExecutableFilePath);
 
         ProcessBuilder processBuilder = new ProcessBuilder(processPrams);
-        spectateForProcess(processBuilder.start());
+        waitForProcessStart(processBuilder.start());
     }
 
     /**
@@ -40,7 +40,7 @@ public class LauncherExecutor implements ApplicationExecutor {
      *
      * @param process - запущенный процесс лаунчера
      */
-    private void spectateForProcess(Process process) {
+    private void waitForProcessStart(Process process) {
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         String line;

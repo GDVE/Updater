@@ -11,59 +11,54 @@ import java.util.Objects;
 
 public class ResourcesUtils {
 
-    private static final Map<String, BufferedImage> bufferedImagesCache = new HashMap<>();
-    private static final Map<String, ImageIcon> iconImagesCache = new HashMap<>();
+    private static final Map<String, BufferedImage> BUFFERED_IMAGES_CACHE = new HashMap<>();
+    private static final Map<String, ImageIcon> ICONS_CACHE = new HashMap<>();
     private static final Map<String, Font> FONTS_LOADED = new HashMap<>();
 
-    public static Font getFont(String fontName, float size) {
+    public static Font getOrCreateFont(String fontName, float size) {
 
         Font font = Font.getFont("Arial");
 
         try {
-
             font = FONTS_LOADED.getOrDefault(
                     fontName,
-                    Font.createFont(0, ResourcesUtils.class.getResourceAsStream("/assets/fonts/" + fontName + ".ttf")))
+                    Font.createFont(0, Objects.requireNonNull(
+                            ResourcesUtils.class.getResourceAsStream("/assets/fonts/" + fontName + ".ttf"))))
                     .deriveFont(size);
-
         } catch (FontFormatException | IOException e) {
             e.printStackTrace();
         }
-
-        if (!FONTS_LOADED.containsKey(fontName))
-            FONTS_LOADED.put(fontName, font);
-
+        if (!FONTS_LOADED.containsKey(fontName)) FONTS_LOADED.put(fontName, font);
         return font;
     }
 
-    public static ImageIcon getImageIcon(String path) {
+    public static ImageIcon getOrCreateImageIcon(String path) {
 
         path = "/assets/images/" + path;
 
-        if (iconImagesCache.containsKey(path))
-            return iconImagesCache.get(path);
+        if (ICONS_CACHE.containsKey(path))
+            return ICONS_CACHE.get(path);
         else {
-
             ImageIcon imageIcon = new ImageIcon(new BufferedImage(1, 1, 2));
 
             try {
-                imageIcon = new ImageIcon(ResourcesUtils.class.getResource(path));
+                imageIcon = new ImageIcon(Objects.requireNonNull(ResourcesUtils.class.getResource(path)));
             } catch (Exception e) {
                 System.out.println("Неудалось загрузить иконку:");
                 e.printStackTrace();
             }
 
-            iconImagesCache.put(path, imageIcon);
+            ICONS_CACHE.put(path, imageIcon);
             return imageIcon;
         }
     }
 
-    public static BufferedImage getBufferedImage(String path) {
+    public static BufferedImage getOrCreateBufferedImage(String path) {
 
         path = "/assets/images/" + path;
 
-        if (bufferedImagesCache.containsKey(path))
-            return bufferedImagesCache.get(path);
+        if (BUFFERED_IMAGES_CACHE.containsKey(path))
+            return BUFFERED_IMAGES_CACHE.get(path);
         else {
 
             BufferedImage bufferedImage = new BufferedImage(1, 1, 2);
@@ -75,9 +70,8 @@ public class ResourcesUtils {
                 e.printStackTrace();
             }
 
-            bufferedImagesCache.put(path, bufferedImage);
+            BUFFERED_IMAGES_CACHE.put(path, bufferedImage);
             return bufferedImage;
         }
     }
-
 }

@@ -1,24 +1,28 @@
-package ru.simplemc.updater.thread.data;
+package ru.simplemc.updater.service.downloader.beans;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 public class FileInfo {
 
-    @JsonProperty
     @Getter
+    @JsonProperty
     private String path;
-    @JsonProperty
+
     @Getter
+    @JsonProperty
     private String name;
-    @JsonProperty
+
     @Getter
+    @JsonProperty
     private String url;
-    @JsonProperty
+
     @Getter
+    @JsonProperty
     private String md5;
-    @JsonProperty
+
     @Getter
+    @JsonProperty
     private long size;
 
 }

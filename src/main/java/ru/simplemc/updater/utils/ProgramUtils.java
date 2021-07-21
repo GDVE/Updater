@@ -1,6 +1,6 @@
 package ru.simplemc.updater.utils;
 
-import ru.simplemc.updater.Settings;
+import ru.simplemc.updater.Environment;
 import ru.simplemc.updater.Updater;
 import ru.simplemc.updater.gui.utils.MessageUtils;
 
@@ -48,7 +48,7 @@ public class ProgramUtils {
 
         System.setProperty("java.net.preferIPv4Stack", "true");
         System.setProperty("file.encoding", "UTF-8");
-        System.setProperty("http.agent", Settings.HTTP_USER_AGENT);
+        System.setProperty("http.agent", Environment.HTTP_USER_AGENT);
 
         try {
             Field charset = Charset.class.getDeclaredField("defaultCharset");
@@ -71,10 +71,6 @@ public class ProgramUtils {
         }
 
         return null;
-    }
-
-    public static String getProgramPathString() {
-        return String.valueOf(getProgramPath());
     }
 
     /**
@@ -102,12 +98,9 @@ public class ProgramUtils {
         }
 
         try {
-
             if (Files.exists(path)) {
                 if (!Files.isDirectory(path)) Files.delete(path);
-            } else
-                Files.createDirectory(path);
-
+            } else Files.createDirectory(path);
         } catch (IOException e) {
             MessageUtils.printFullStackTraceWithExit("Не удалось создать рабочую директорию лаунчера", e);
             haltProgram();
@@ -120,14 +113,8 @@ public class ProgramUtils {
      * @return Возвращает текущее расширение исполняемого файла программы.
      */
     public static String getExecutableFileExtension() {
-
         Path programPath = getProgramPath();
-
-        if (programPath != null && programPath.getFileName().toString().endsWith(".exe")) {
-            return "exe";
-        }
-
-        return "jar";
+        return programPath != null && programPath.getFileName().toString().endsWith(".exe") ? "exe" : "jar";
     }
 
     /**

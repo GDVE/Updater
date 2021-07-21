@@ -4,18 +4,15 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class CompressedUtils {
 
-    public static void unZipArchive(File archiveFile) {
-        unZipArchive(archiveFile, archiveFile.getParentFile());
-    }
-
     public static void unZipArchive(File archiveFile, File extractDirectory) {
         try {
-
             FileInputStream fileInputStream = new FileInputStream(archiveFile);
             ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(fileInputStream));
             ZipEntry zipEntry;
@@ -26,16 +23,15 @@ public class CompressedUtils {
 
             zipInputStream.close();
             fileInputStream.close();
-
         } catch (Exception exception) {
             exception.printStackTrace();
         }
     }
 
     private static void extractFromZip(ZipEntry zipEntry, ZipInputStream zipInputStream, File extractDirectory) throws Exception {
-
-        if (zipEntry.isDirectory())
+        if (zipEntry.isDirectory()) {
             return;
+        }
 
         String zipEntryName = slashToFileSeparator(zipEntry.getName());
         String zipEntryDirPath;
@@ -45,18 +41,13 @@ public class CompressedUtils {
         else
             zipEntryDirPath = "";
 
-        new File(extractDirectory + File.separator + zipEntryDirPath).mkdirs();
-
+        Files.createDirectories(Paths.get(extractDirectory + File.separator + zipEntryDirPath));
         FileOutputStream fileOutputStream = new FileOutputStream(extractDirectory + File.separator + zipEntryName);
         byte[] buffer = new byte[1024];
 
         while (true) {
-
             int length = zipInputStream.read(buffer);
-
-            if (length < 0)
-                break;
-
+            if (length < 0) break;
             fileOutputStream.write(buffer, 0, length);
         }
 
@@ -64,17 +55,13 @@ public class CompressedUtils {
     }
 
     private static String slashToFileSeparator(String source) {
-
         char[] chars = new char[source.length()];
 
         for (int i = 0; i < source.length(); i++) {
-            if (source.charAt(i) == '/')
-                chars[i] = File.separatorChar;
-            else
-                chars[i] = source.charAt(i);
+            if (source.charAt(i) == '/') chars[i] = File.separatorChar;
+            else chars[i] = source.charAt(i);
         }
 
         return new String(chars);
     }
-
 }

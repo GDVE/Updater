@@ -1,8 +1,7 @@
 package ru.simplemc.updater.gui;
 
-import ru.simplemc.updater.Settings;
+import ru.simplemc.updater.Environment;
 import ru.simplemc.updater.utils.OSUtils;
-import ru.simplemc.updater.utils.ResourcesUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,9 +19,9 @@ public class ProgressBar extends JProgressBar {
         setBackground(Color.decode("#e7e7e6"));
 
         if (OSUtils.isLinux() || OSUtils.isMacOS())
-            setBounds(new Rectangle(40 - Settings.FRAME_SHADOW_SIZE, Settings.FRAME_HEIGHT - Settings.FRAME_SHADOW_SIZE - 32 - height, Settings.FRAME_WIDTH - Settings.FRAME_SHADOW_SIZE - 40 * 2, height));
+            setBounds(new Rectangle(40 - Environment.FRAME_SHADOW_SIZE, Environment.FRAME_HEIGHT - Environment.FRAME_SHADOW_SIZE - 32 - height, Environment.FRAME_WIDTH - Environment.FRAME_SHADOW_SIZE - 40 * 2, height));
         else
-            setBounds(new Rectangle(40, Settings.FRAME_HEIGHT - Settings.FRAME_SHADOW_SIZE - 32 - height, Settings.FRAME_WIDTH - Settings.FRAME_SHADOW_SIZE - 40 * 2, height));
+            setBounds(new Rectangle(40, Environment.FRAME_HEIGHT - Environment.FRAME_SHADOW_SIZE - 32 - height, Environment.FRAME_WIDTH - Environment.FRAME_SHADOW_SIZE - 40 * 2, height));
 
         setVisible(true);
     }
