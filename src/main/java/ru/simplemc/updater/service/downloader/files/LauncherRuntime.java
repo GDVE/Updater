@@ -16,6 +16,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -82,6 +85,8 @@ public class LauncherRuntime extends DownloaderFile {
         mapping.put("archiveHash", this.getMd5());
         mapping.scanAndWriteToDisk();
         FilesUtils.deleteFile(getPath());
+
+        if (OSUtils.isMacOS()) this.resolveFilesPermissions();
     }
 
     public String getExecutablePath() throws IOException {
@@ -92,5 +97,27 @@ public class LauncherRuntime extends DownloaderFile {
                         || path.getFileName().toString().endsWith("java.exe"))
                 .collect(Collectors.toList()).stream().findFirst()
                 .map(Path::toString).orElse(null);
+    }
+
+    private void resolveFilesPermissions() {
+
+        Set<PosixFilePermission> permissionSet = new HashSet<>();
+        permissionSet.add(PosixFilePermission.OWNER_READ);
+        permissionSet.add(PosixFilePermission.OWNER_WRITE);
+        permissionSet.add(PosixFilePermission.OWNER_EXECUTE);
+
+        try {
+            Files.find(directory, Integer.MAX_VALUE,
+                    ((path, attributes) -> attributes.isRegularFile()))
+                    .forEach(path -> {
+                        try {
+                            Files.setPosixFilePermissions(path, permissionSet);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
