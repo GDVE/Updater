@@ -40,7 +40,7 @@ public class DownloaderService {
             return "Обновления программы";
         }
 
-        if (fileName.equals("jre-")) {
+        if (fileName.startsWith("jre-")) {
             return "Обновления Java";
         }
 
