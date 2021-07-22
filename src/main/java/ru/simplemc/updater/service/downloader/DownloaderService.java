@@ -24,8 +24,27 @@ public class DownloaderService {
         this.downloaderFile = downloaderFile;
         this.downloaderPane = new DownloaderPane();
         this.progressBar = this.downloaderPane.getProgressBar();
-        this.downloaderPane.setStatusAndDescription("Загрузка файла", this.downloaderFile.getPath().getFileName().toString());
+        this.downloaderPane.setStatusAndDescription("Загрузка файлов", getPrettyFileName());
         frame.setPane(this.downloaderPane);
+    }
+
+    private String getPrettyFileName() {
+
+        String fileName = this.downloaderFile.getPath().getFileName().toString();
+
+        if (fileName.startsWith("Launcher.")) {
+            return "Обновления лаунчера";
+        }
+
+        if (fileName.startsWith("SimpleMinecraft.")) {
+            return "Обновления программы";
+        }
+
+        if (fileName.equals("jre-")) {
+            return "Обновления Java";
+        }
+
+        return fileName;
     }
 
     /**
