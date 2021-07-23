@@ -5,6 +5,8 @@ import ru.simplemc.updater.gui.pane.WelcomePane;
 import ru.simplemc.updater.thread.UpdateThread;
 import ru.simplemc.updater.utils.ProgramUtils;
 
+import static ru.simplemc.updater.service.TempFilesRemover.removeTempFiles;
+
 public class Updater {
 
     public static void main(String... args) {

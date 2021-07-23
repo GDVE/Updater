@@ -16,11 +16,9 @@ public class FilesUtils {
     public static void deleteFilesRecursive(Path path) {
         if (Files.exists(path))
             try {
-
                 Files.walk(path)
                         .sorted(Comparator.reverseOrder())
                         .forEach(FilesUtils::deleteFile);
-
             } catch (IOException e) {
                 e.printStackTrace();
             }

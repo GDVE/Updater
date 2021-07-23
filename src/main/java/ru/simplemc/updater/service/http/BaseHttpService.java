@@ -10,7 +10,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
 
 public class BaseHttpService {
 
@@ -19,7 +18,6 @@ public class BaseHttpService {
     }
 
     public HttpURLConnection createConnection(URL url) throws IOException {
-        Objects.requireNonNull(url);
         printLog("Open connection to " + url);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setConnectTimeout(15000);
@@ -30,11 +28,6 @@ public class BaseHttpService {
     }
 
     public String performPostRequest(URL url, String post, String contentType) throws IOException {
-
-        Objects.requireNonNull(url);
-        Objects.requireNonNull(post);
-        Objects.requireNonNull(contentType);
-
         HttpURLConnection connection = this.createConnection(url);
         byte[] postAsBytes = post.getBytes(StandardCharsets.UTF_8);
         connection.setRequestMethod("POST");

@@ -25,7 +25,7 @@ public abstract class DownloaderFile {
     public DownloaderFile(FileInfo fileInfo) {
         path = Paths.get(ProgramUtils.getStoragePath() + "/" + fileInfo.getPath()
                 .replace("/program/", ""));
-        name = getPath().getFileName().toString();
+        name = fileInfo.getName();
         url = fileInfo.getUrl();
         md5 = fileInfo.getMd5();
         size = fileInfo.getSize();

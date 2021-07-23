@@ -18,9 +18,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class LauncherRuntime extends DownloaderFile {
 
@@ -31,41 +31,58 @@ public class LauncherRuntime extends DownloaderFile {
     @Getter
     private final FilesMapping mapping;
 
-    public LauncherRuntime(FileInfo fileInfo) {
-        super(fileInfo);
-        this.version = "1.8.0_144";
+    public LauncherRuntime(List<FileInfo> runtimesFileInfos) {
+        super(findBySystem(runtimesFileInfos));
+        this.version = "1.8.0_51";
         this.directory = Paths.get(ProgramUtils.getStoragePath() + "/runtime/jre"
                 + (OSUtils.isMacOS() ? version + ".jre" : version));
         this.mapping = new FilesMapping(directory, "runtime_" + version);
     }
 
+    private static FileInfo findBySystem(List<FileInfo> fileInfos) {
+        return fileInfos.stream().filter(fileInfo -> {
+            if (OSUtils.isWindows()) return fileInfo.getName().endsWith(".zip");
+            else return true;
+        }).findAny().orElse(fileInfos.get(fileInfos.size() - 1));
+    }
+
+    @Override
+    public Path getPath() {
+        return Paths.get(directory.getParent() + "/" + getName());
+    }
+
     @Override
     public boolean isInvalid() {
+
+        try {
+            if (Files.exists(getPath()) && Files.size(getPath()) != getSize()) {
+                return true;
+            }
+        } catch (IOException e) {
+            return true;
+        }
 
         if (!this.getMd5().equals(mapping.get("archiveHash"))) {
             return true;
         }
 
-        Stream<Path> stream;
-        try {
-            stream = Files.find(directory, Integer.MAX_VALUE, (path, attributes) -> attributes.isRegularFile());
-        } catch (IOException e) {
-            e.printStackTrace();
+        Path oldJreMapping = Paths.get(directory + ".json");
+        if (Files.exists(oldJreMapping)) {
+            FilesUtils.deleteFile(oldJreMapping);
             return true;
         }
 
-        for (Path path : stream.collect(Collectors.toList())) {
-            if (mapping.isInvalid(path)) {
-                return true;
-            }
+        try {
+            return mapping.findInvalidOrDeletedFiles();
+        } catch (IOException e) {
+            return true;
         }
-
-        return false;
     }
 
     @Override
     public void prepareBeforeDownload() throws IOException {
         mapping.removeFromDisk();
+        FilesUtils.deleteFilesRecursive(directory);
         Files.createDirectories(directory.getParent());
     }
 
@@ -76,7 +93,12 @@ public class LauncherRuntime extends DownloaderFile {
         File extractionDirectory = directory.getParent().toFile();
 
         if (this.getName().endsWith(".zip")) {
-            CompressedUtils.unZipArchive(archiveFile, extractionDirectory);
+            try {
+                CompressedUtils.unZipArchive(archiveFile, extractionDirectory);
+            } catch (Exception e) {
+                Archiver archiver = ArchiverFactory.createArchiver(archiveFile);
+                archiver.extract(archiveFile, extractionDirectory);
+            }
         } else {
             Archiver archiver = ArchiverFactory.createArchiver(archiveFile);
             archiver.extract(archiveFile, extractionDirectory);
@@ -84,9 +106,9 @@ public class LauncherRuntime extends DownloaderFile {
 
         mapping.put("archiveHash", this.getMd5());
         mapping.scanAndWriteToDisk();
-        FilesUtils.deleteFile(getPath());
 
-        if (OSUtils.isMacOS()) this.resolveFilesPermissions();
+        resolveFilesPermissions();
+        FilesUtils.deleteFile(getPath());
     }
 
     public String getExecutablePath() throws IOException {
@@ -100,6 +122,10 @@ public class LauncherRuntime extends DownloaderFile {
     }
 
     private void resolveFilesPermissions() {
+
+        if (!OSUtils.isMacOS()) {
+            return;
+        }
 
         Set<PosixFilePermission> permissionSet = new HashSet<>();
         permissionSet.add(PosixFilePermission.OWNER_READ);

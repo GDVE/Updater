@@ -33,15 +33,15 @@ public class DownloaderService {
         String fileName = this.downloaderFile.getPath().getFileName().toString();
 
         if (fileName.startsWith("Launcher.")) {
-            return "Обновления лаунчера";
+            return "Обновления лаунчера...";
         }
 
         if (fileName.startsWith("SimpleMinecraft.")) {
-            return "Обновления программы";
+            return "Обновления программы...";
         }
 
         if (fileName.startsWith("jre-")) {
-            return "Обновления Java";
+            return "Обновления Java...";
         }
 
         return fileName;
@@ -52,13 +52,12 @@ public class DownloaderService {
      *
      * @throws IOException - в случае какой либо неудачи
      */
-    public void process() throws Exception {
+    public void process() throws IOException {
 
         progressBar.setVisible(true);
         downloaderFile.prepareBeforeDownload();
 
         HttpURLConnection connection = HttpServiceManager.createConnection(downloaderFile.getUrl());
-        connection.setRequestMethod("GET");
         InputStream inputStream = null;
         OutputStream outputStream = null;
 

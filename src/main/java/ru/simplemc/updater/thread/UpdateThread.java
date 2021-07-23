@@ -5,6 +5,7 @@ import ru.simplemc.updater.Environment;
 import ru.simplemc.updater.executor.LauncherExecutor;
 import ru.simplemc.updater.gui.Frame;
 import ru.simplemc.updater.gui.utils.MessageUtils;
+import ru.simplemc.updater.service.TempFilesRemover;
 import ru.simplemc.updater.service.downloader.DownloaderService;
 import ru.simplemc.updater.service.downloader.beans.DownloaderFile;
 import ru.simplemc.updater.service.downloader.files.LauncherFile;
@@ -22,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static ru.simplemc.updater.service.TempFilesRemover.removeTempFiles;
+
 public class UpdateThread extends Thread {
 
     private final Frame frame;
@@ -33,20 +36,24 @@ public class UpdateThread extends Thread {
 
     @Override
     public void run() {
+
+        TempFilesRemover.removeTempFiles();
+
         Optional<CheckUpdatesResponse> optionalResponse = getCheckUpdatesResponse();
         if (optionalResponse.isPresent()) {
             CheckUpdatesResponse response = optionalResponse.get();
             List<DownloaderFile> downloaderFiles = new ArrayList<>();
             downloaderFiles.add(new UpdaterFile(response.getUpdaterFileInfo()));
             downloaderFiles.add(new LauncherFile(response.getLauncherFileInfo()));
-            downloaderFiles.add(new LauncherRuntime(response.getRuntimesFileInfos().get(0)));
+            downloaderFiles.add(new LauncherRuntime(response.getRuntimesFileInfos()));
             downloaderFiles.stream()
                     .filter(DownloaderFile::isInvalid)
                     .forEach(downloaderFile -> {
                         DownloaderService downloaderService = new DownloaderService(frame, downloaderFile);
                         try {
                             downloaderService.process();
-                        } catch (Exception e) {
+                        } catch (IOException e) {
+                            e.printStackTrace();
                             MessageUtils.printFullStackTraceWithExit("Не удалось загрузить файл: "
                                     + downloaderFile.getName(), e);
                         }

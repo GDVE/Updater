@@ -12,7 +12,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class FilesMapping extends HashMap<String, String> {
@@ -43,27 +42,27 @@ public class FilesMapping extends HashMap<String, String> {
         this.put(getFileKey(path), String.valueOf(size));
     }
 
-    public boolean isInvalid(DownloaderFile file) {
+    public boolean findInvalidOrDeletedFiles() throws IOException {
+        for (String key : this.keySet()) {
+            if (key.equals("archiveHash")) {
+                continue;
+            }
+            Path path = Paths.get(scanPath + "/" + key);
+            if (!Files.exists(path) || !String.valueOf(Files.size(path)).equals(get(key))) {
+                return true;
+            }
+        }
 
+        return false;
+    }
+
+    public boolean isInvalid(DownloaderFile file) {
         if (!Files.exists(file.getPath())) {
             return true;
         }
 
         String mappingMd5 = get(getFileKey(file.getPath()));
         return mappingMd5 == null || !mappingMd5.equals(file.getMd5());
-    }
-
-    public boolean isInvalid() throws IOException {
-
-        Stream<Path> stream = Files.find(scanPath, Integer.MAX_VALUE, (path, attributes) -> attributes.isRegularFile());
-
-        for (Path path : stream.collect(Collectors.toList())) {
-            if (this.isInvalid(path)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     public boolean isInvalid(Path path) {
@@ -77,7 +76,6 @@ public class FilesMapping extends HashMap<String, String> {
         }
 
         String identifier = get(getFileKey(path));
-
         if (identifier == null) {
             return true;
         }
