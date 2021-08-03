@@ -5,15 +5,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ResourcesUtils {
 
-    private static final Map<String, BufferedImage> BUFFERED_IMAGES_CACHE = new HashMap<>();
-    private static final Map<String, ImageIcon> ICONS_CACHE = new HashMap<>();
-    private static final Map<String, Font> FONTS_LOADED = new HashMap<>();
+    private static final Map<String, BufferedImage> BUFFERED_IMAGES_CACHE = new ConcurrentHashMap<>();
+    private static final Map<String, ImageIcon> ICONS_CACHE = new ConcurrentHashMap<>();
+    private static final Map<String, Font> FONTS_LOADED = new ConcurrentHashMap<>();
 
     public static Font getOrCreateFont(String fontName, float size) {
 
