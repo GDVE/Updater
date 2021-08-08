@@ -15,8 +15,10 @@ public class GraphicsUtils {
         graphics2D.setColor(Color.decode("#" + color));
         graphics2D.setFont(ResourcesUtils.getOrCreateFont(fontName, fontSize));
 
-        if (OSUtils.isLinux() || OSUtils.isMacOS())
+        if (OSUtils.isLinux() || OSUtils.isMacOS()) {
             x = x - Environment.FRAME_SHADOW_SIZE;
+            y = y - Environment.FRAME_SHADOW_SIZE;
+        }
 
         graphics2D.drawString(text, x, y);
     }
