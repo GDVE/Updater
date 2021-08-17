@@ -2,6 +2,7 @@ package ru.simplemc.updater.service.http;
 
 import org.apache.commons.io.IOUtils;
 import ru.simplemc.updater.Environment;
+import ru.simplemc.updater.service.http.ssl.LetsEncryptAdder;
 import ru.simplemc.updater.utils.ProgramUtils;
 
 import java.io.IOException;
@@ -12,6 +13,15 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 public class BaseHttpService {
+
+    public BaseHttpService() {
+        try {
+            LetsEncryptAdder.doStuff();
+        } catch (Exception e) {
+            printLog("Failed to add LetsEncrypt certificates!");
+            e.printStackTrace();
+        }
+    }
 
     private void printLog(String message) {
         if (ProgramUtils.isDebugMode()) System.out.println("[" + getClass().getSimpleName() + "] " + message);
