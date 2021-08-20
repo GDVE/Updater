@@ -65,7 +65,7 @@ public class HttpServiceManager {
         try {
             return httpService.createConnection(new URL(protocol + url));
         } catch (IOException e) {
-            if (changeProtocol() || changeTrustManager()) {
+            if (changeTrustManager() || changeProtocol()) {
                 return createConnection(url);
             } else {
                 throw e;
@@ -78,7 +78,7 @@ public class HttpServiceManager {
             return httpService.performPostRequest(new URL(protocol + url), mapper.writeValueAsString(object),
                     "application/json");
         } catch (IOException e) {
-            if (changeProtocol() || changeTrustManager()) {
+            if (changeTrustManager() || changeProtocol()) {
                 return performPostRequest(url, object);
             } else {
                 throw e;
