@@ -187,11 +187,12 @@ public class Frame extends JFrame {
 
         if (launcherConfig.getSelectedTheme() != null) {
             Map<String, String> backgroundByName = new HashMap<>();
+            backgroundByName.put("Тема оформления: Осень", "fall");
             backgroundByName.put("Тема оформления: Лес", "forest");
             backgroundByName.put("Тема оформления: Берег", "lake");
             backgroundByName.put("Тема оформления: Секретная база", "sweet_home");
             backgroundByName.put("Тема оформления: Фабрика", "factory");
-            BACKGROUND_IMAGE = backgroundByName.getOrDefault(launcherConfig.getSelectedTheme(), "forest");
+            BACKGROUND_IMAGE = backgroundByName.getOrDefault(launcherConfig.getSelectedTheme(), "fall");
         }
     }
 }

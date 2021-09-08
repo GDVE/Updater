@@ -10,5 +10,5 @@ public class Environment {
     public static final int FRAME_SHADOW_SIZE = 5;
 
     public static final String FRAME_TITLE = "SimpleMinecraft.Ru - Updater";
-    public static String BACKGROUND_IMAGE = "forest";
+    public static String BACKGROUND_IMAGE = "fall";
 }
