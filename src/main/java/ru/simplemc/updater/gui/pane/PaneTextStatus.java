@@ -1,6 +1,7 @@
 package ru.simplemc.updater.gui.pane;
 
 import ru.simplemc.updater.Environment;
+import ru.simplemc.updater.utils.OSUtils;
 import ru.simplemc.updater.utils.ResourcesUtils;
 
 import java.awt.*;
@@ -12,7 +13,7 @@ public class PaneTextStatus extends PaneBase {
     protected int posY;
 
     public PaneTextStatus(String title, String message) {
-        this(title, message, 62);
+        this(title, message, OSUtils.isWindows() ? 62 : 70);
     }
 
     public PaneTextStatus(String title, String message, int posY) {

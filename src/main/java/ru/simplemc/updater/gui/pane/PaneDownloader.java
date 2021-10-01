@@ -2,6 +2,7 @@ package ru.simplemc.updater.gui.pane;
 
 import lombok.Getter;
 import ru.simplemc.updater.gui.ProgressBar;
+import ru.simplemc.updater.utils.OSUtils;
 
 import java.awt.*;
 
@@ -17,7 +18,9 @@ public class PaneDownloader extends PaneTextStatus {
 
     @Override
     protected void paintComponent(Graphics graphics) {
-        this.posY = progressBar.isVisible() ? 52 : 62;
+        this.posY = progressBar.isVisible()
+                ? OSUtils.isWindows() ? 52 : 60
+                : OSUtils.isWindows() ? 62 : 70;
         super.paintComponent(graphics);
     }
 }
