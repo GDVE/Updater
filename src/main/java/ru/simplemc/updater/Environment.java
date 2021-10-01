@@ -10,12 +10,12 @@ public class Environment {
     public static final int FRAME_WIDTH = 380;
     public static final int FRAME_HEIGHT = 180;
 
-    public static final Color BACKGROUND_COLOR = Color.decode("#fefaee");
-    public static final Color BACKGROUND_COLOR_2 = Color.decode("#ffecd2");
-    public static final Color PROGRESS_BAR_COLOR_FOREGROUND = Color.decode("#abca4e");
-    public static final Color PROGRESS_BAR_COLOR_BACKGROUND = Color.decode("#606060");
-    public static final Color TITLE_FONT_COLOR = Color.decode("#343434");
-    public static final Color MESSAGE_FONT_COLOR = Color.decode("#7e9914");
+    public static final Color BACKGROUND_COLOR = new Color(254, 250, 238);
+    public static final Color BACKGROUND_COLOR_2 = new Color(255, 238, 220);
+    public static final Color PROGRESS_BAR_COLOR_FOREGROUND = new Color(171, 202, 78);
+    public static final Color PROGRESS_BAR_COLOR_BACKGROUND = new Color(136, 120, 104);
+    public static final Color TITLE_FONT_COLOR = new Color(52, 52, 52);
+    public static final Color MESSAGE_FONT_COLOR = new Color(126, 153, 20);
 
     public static final String FRAME_TITLE = "SimpleMinecraft.Ru";
 }

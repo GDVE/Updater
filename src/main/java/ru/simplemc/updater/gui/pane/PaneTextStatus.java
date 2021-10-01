@@ -24,7 +24,7 @@ public class PaneTextStatus extends PaneBase {
     protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
         drawString(graphics, posY, true, title);
-        drawString(graphics, posY + 20, false, message);
+        drawString(graphics, posY + 22, false, message);
     }
 
     public void setCurrentStatus(String title, String message) {
