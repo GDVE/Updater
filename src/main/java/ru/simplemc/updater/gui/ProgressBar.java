@@ -1,28 +1,21 @@
 package ru.simplemc.updater.gui;
 
 import ru.simplemc.updater.Environment;
-import ru.simplemc.updater.utils.OSUtils;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class ProgressBar extends JProgressBar {
 
-    public ProgressBar(int height) {
-
+    public ProgressBar() {
         setMinimum(0);
         setMaximum(100);
         setString("0%");
         setStringPainted(false);
         setBorderPainted(false);
-        setForeground(Color.decode("#92d246"));
-        setBackground(Color.decode("#e7e7e6"));
-
-        if (OSUtils.isLinux() || OSUtils.isMacOS())
-            setBounds(new Rectangle(40 - Environment.FRAME_SHADOW_SIZE, Environment.FRAME_HEIGHT - Environment.FRAME_SHADOW_SIZE - 32 - height, Environment.FRAME_WIDTH - Environment.FRAME_SHADOW_SIZE - 40 * 2, height));
-        else
-            setBounds(new Rectangle(40, Environment.FRAME_HEIGHT - Environment.FRAME_SHADOW_SIZE - 32 - height, Environment.FRAME_WIDTH - Environment.FRAME_SHADOW_SIZE - 40 * 2, height));
-
+        setForeground(Environment.PROGRESS_BAR_COLOR_FOREGROUND);
+        setBackground(Environment.PROGRESS_BAR_COLOR_BACKGROUND);
+        setBounds(new Rectangle(34, 98, Environment.FRAME_WIDTH - 40 * 2, 8));
         setVisible(true);
     }
 

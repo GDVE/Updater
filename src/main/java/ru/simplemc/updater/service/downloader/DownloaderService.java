@@ -1,9 +1,8 @@
 package ru.simplemc.updater.service.downloader;
 
 import org.apache.commons.io.IOUtils;
-import ru.simplemc.updater.gui.Frame;
-import ru.simplemc.updater.gui.ProgressBar;
-import ru.simplemc.updater.gui.pane.DownloaderPane;
+import ru.simplemc.updater.Updater;
+import ru.simplemc.updater.gui.pane.PaneDownloader;
 import ru.simplemc.updater.service.downloader.beans.DownloaderFile;
 import ru.simplemc.updater.service.downloader.files.LauncherRuntime;
 import ru.simplemc.updater.service.http.HttpServiceManager;
@@ -16,32 +15,28 @@ import java.net.HttpURLConnection;
 
 public class DownloaderService {
 
-    private final DownloaderFile downloaderFile;
-    private final DownloaderPane downloaderPane;
-    private final ProgressBar progressBar;
+    private final DownloaderFile file;
+    private final PaneDownloader downloaderPane;
 
-    public DownloaderService(Frame frame, DownloaderFile downloaderFile) {
-        this.downloaderFile = downloaderFile;
-        this.downloaderPane = new DownloaderPane();
-        this.progressBar = this.downloaderPane.getProgressBar();
-        this.downloaderPane.setStatusAndDescription("Загрузка файлов", getPrettyFileName());
-        frame.setPane(this.downloaderPane);
+    public DownloaderService(DownloaderFile file) {
+        this.file = file;
+        Updater.getFrame().setPane(downloaderPane = new PaneDownloader());
     }
 
     private String getPrettyFileName() {
 
-        String fileName = this.downloaderFile.getPath().getFileName().toString();
+        String fileName = this.file.getPath().getFileName().toString();
 
         if (fileName.startsWith("Launcher.")) {
-            return "Обновления лаунчера...";
+            return "Скачивание лаунчера...";
         }
 
         if (fileName.startsWith("SimpleMinecraft.")) {
-            return "Обновления программы...";
+            return "Скачивание новой версии...";
         }
 
         if (fileName.startsWith("jre-")) {
-            return "Обновления Java...";
+            return "Скачивание Java Runtime...";
         }
 
         return fileName;
@@ -54,17 +49,18 @@ public class DownloaderService {
      */
     public void process() throws IOException {
 
-        progressBar.setVisible(true);
-        downloaderFile.prepareBeforeDownload();
+        downloaderPane.getProgressBar().setVisible(true);
+        downloaderPane.setCurrentStatus("Обновление", getPrettyFileName());
+        file.prepareBeforeDownload();
 
-        HttpURLConnection connection = HttpServiceManager.createConnection(downloaderFile.getUrl());
+        HttpURLConnection connection = HttpServiceManager.createConnection(file.getUrl());
         InputStream inputStream = null;
         OutputStream outputStream = null;
 
         try {
 
             inputStream = connection.getInputStream();
-            outputStream = new FileOutputStream(downloaderFile.getPath().toFile());
+            outputStream = new FileOutputStream(file.getPath().toFile());
 
             byte[] buffer = new byte[4096];
             long currentFileSize = 0;
@@ -73,20 +69,24 @@ public class DownloaderService {
             while ((bufferSize = inputStream.read(buffer, 0, buffer.length)) >= 0) {
                 currentFileSize += bufferSize;
                 outputStream.write(buffer, 0, bufferSize);
-                progressBar.setValue((int) (currentFileSize * 100F / downloaderFile.getSize()));
+                downloaderPane.getProgressBar().setValue((int) (currentFileSize * 100F / file.getSize()));
             }
 
         } finally {
             IOUtils.closeQuietly(inputStream);
             IOUtils.closeQuietly(outputStream);
-            progressBar.setVisible(false);
+            downloaderPane.getProgressBar().setVisible(false);
         }
 
-        if (downloaderFile instanceof LauncherRuntime) {
-            downloaderPane.setStatusAndDescription("Распаковка архива",
-                    downloaderFile.getPath().getFileName().toString());
+        if (file instanceof LauncherRuntime) {
+            downloaderPane.setCurrentStatus("Распаковка архива", getFileName(file));
         }
 
-        downloaderFile.prepareAfterDownload();
+        downloaderPane.setCurrentStatus("Обновление", "Загружен " + getFileName(file));
+        file.prepareAfterDownload();
+    }
+
+    private static String getFileName(DownloaderFile file) {
+        return file.getPath().getFileName().toString();
     }
 }

@@ -1,7 +1,7 @@
 package ru.simplemc.updater.executor;
 
 import ru.simplemc.updater.gui.Frame;
-import ru.simplemc.updater.gui.pane.StartupPane;
+import ru.simplemc.updater.gui.pane.PaneTextStatus;
 import ru.simplemc.updater.utils.OSUtils;
 import ru.simplemc.updater.utils.ProgramUtils;
 
@@ -11,7 +11,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LauncherExecutor implements ApplicationExecutor {
+public class LauncherExecutor {
 
     private final String runtimeExecutableFilePath;
     private final String launcherExecutableFilePath;
@@ -19,10 +19,9 @@ public class LauncherExecutor implements ApplicationExecutor {
     public LauncherExecutor(Frame frame, String runtimeExecutableFilePath, String launcherExecutableFilePath) {
         this.runtimeExecutableFilePath = runtimeExecutableFilePath;
         this.launcherExecutableFilePath = launcherExecutableFilePath;
-        frame.setPane(new StartupPane());
+        frame.setPane(new PaneTextStatus("Все обновлено", "Запуск лаунчера..."));
     }
 
-    @Override
     public void execute() throws IOException {
 
         List<String> processPrams = new ArrayList<>();
@@ -36,7 +35,7 @@ public class LauncherExecutor implements ApplicationExecutor {
     }
 
     /**
-     * Наблюдаем за процессом лаунчера, ждем от него заветного слова и выключаемся :)
+     * Наблюдаем за процессом лаунчера, ждем от него заветного слова и выключаемся.
      *
      * @param process - запущенный процесс лаунчера
      */
@@ -53,6 +52,6 @@ public class LauncherExecutor implements ApplicationExecutor {
         } catch (IOException ignored) {
         }
 
-        ProgramUtils.haltProgram();
+        //ProgramUtils.haltProgram();
     }
 }

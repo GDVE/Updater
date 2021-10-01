@@ -2,10 +2,9 @@ package ru.simplemc.updater.thread;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import ru.simplemc.updater.Environment;
+import ru.simplemc.updater.Updater;
 import ru.simplemc.updater.executor.LauncherExecutor;
-import ru.simplemc.updater.gui.Frame;
 import ru.simplemc.updater.gui.utils.MessageUtils;
-import ru.simplemc.updater.service.TempFilesRemover;
 import ru.simplemc.updater.service.downloader.DownloaderService;
 import ru.simplemc.updater.service.downloader.beans.DownloaderFile;
 import ru.simplemc.updater.service.downloader.files.LauncherFile;
@@ -23,25 +22,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static ru.simplemc.updater.service.TempFilesRemover.removeTempFiles;
-
 public class UpdateThread extends Thread {
 
-    private final Frame frame;
-
-    public UpdateThread(Frame frame) {
+    public UpdateThread() {
         this.setName("Updater Thread");
-        this.frame = frame;
     }
 
     @Override
     public void run() {
 
-        TempFilesRemover.removeTempFiles();
-
         Optional<CheckUpdatesResponse> optionalResponse = getCheckUpdatesResponse();
+
         if (optionalResponse.isPresent()) {
+
+            Updater.getFrame().setStatus("Поиск обновлений", "Проверка файлов...");
             CheckUpdatesResponse response = optionalResponse.get();
+
             List<DownloaderFile> downloaderFiles = new ArrayList<>();
             downloaderFiles.add(new UpdaterFile(response.getUpdaterFileInfo()));
             downloaderFiles.add(new LauncherFile(response.getLauncherFileInfo()));
@@ -49,7 +45,7 @@ public class UpdateThread extends Thread {
             downloaderFiles.stream()
                     .filter(DownloaderFile::isInvalid)
                     .forEach(downloaderFile -> {
-                        DownloaderService downloaderService = new DownloaderService(frame, downloaderFile);
+                        DownloaderService downloaderService = new DownloaderService(downloaderFile);
                         try {
                             downloaderService.process();
                         } catch (IOException e) {
@@ -63,11 +59,16 @@ public class UpdateThread extends Thread {
             LauncherRuntime launcherRuntime = (LauncherRuntime) downloaderFiles.get(2);
 
             try {
-                LauncherExecutor executor = new LauncherExecutor(frame, launcherRuntime.getExecutablePath(), launcherFile.getPath().toString());
+                LauncherExecutor executor = new LauncherExecutor(
+                        Updater.getFrame(),
+                        launcherRuntime.getExecutablePath(), launcherFile.getPath().toString()
+                );
                 executor.execute();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        } else {
+            Updater.getFrame().setStatus("Произошла ошибка", "Не подключится к серверу!");
         }
 
         ProgramUtils.haltProgram();

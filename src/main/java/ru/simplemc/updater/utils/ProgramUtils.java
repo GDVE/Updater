@@ -133,15 +133,4 @@ public class ProgramUtils {
 
         System.exit(0);
     }
-
-    /**
-     * Полное завершение программы, но с сообщением в System.out.
-     *
-     * @param message - сообщение для вывода в System.out
-     */
-    public static void haltProgram(String message) {
-        System.out.println(message);
-        haltProgram();
-    }
-
 }

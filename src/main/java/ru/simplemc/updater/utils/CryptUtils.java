@@ -12,54 +12,6 @@ import java.security.NoSuchAlgorithmException;
 public class CryptUtils {
 
     /**
-     * Возвращает SHA1 из переданной строки
-     *
-     * @param string - строка для хеширования
-     * @return - хешированная строка
-     */
-    public static String sha1(String string) {
-
-        String sha1String = null;
-
-        try {
-
-            StringBuilder stringBuilder = new StringBuilder();
-
-            for (byte digestByte : MessageDigest.getInstance("SHA1").digest(string.getBytes())) {
-                stringBuilder.append(Integer.toString((digestByte & 0xff) + 0x100, 16).substring(1));
-            }
-
-            sha1String = stringBuilder.toString();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return sha1String;
-    }
-
-    /**
-     * Возвращает MD5 из переданной строки
-     *
-     * @param string - строка для хеширования
-     * @return - хешированная строка
-     */
-    public static String md5(String string) {
-
-        String md5String = null;
-
-        try {
-            MessageDigest messageDigest = MessageDigest.getInstance("MD5");
-            messageDigest.update(string.getBytes(), 0, string.length());
-            md5String = new BigInteger(1, messageDigest.digest()).toString(16);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return md5String;
-    }
-
-    /**
      * Возвращает MD5 файла
      *
      * @param path - путь до нужного файла

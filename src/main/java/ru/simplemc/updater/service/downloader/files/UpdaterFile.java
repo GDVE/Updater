@@ -43,7 +43,7 @@ public class UpdaterFile extends DownloaderFile {
         Files.createDirectories(appMoverPath.getParent());
 
         try {
-            inputStream = Objects.requireNonNull(UpdaterFile.class.getResourceAsStream("/AppMover-1.0.1.app"));
+            inputStream = UpdaterFile.class.getResourceAsStream("/assets/mover/AppMover-1.0.1.app");
             outputStream = new FileOutputStream(Paths.get(ProgramUtils.getStoragePath() +
                     "/libs/AppMover-1.0.1.jar").toFile());
 

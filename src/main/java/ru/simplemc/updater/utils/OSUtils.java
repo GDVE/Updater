@@ -16,7 +16,9 @@ import java.nio.file.Path;
 public class OSUtils {
 
     private final static int OS_ID = genOperationSystemId();
-    private final static int OS_ARCH = isWindows() ? (System.getenv("ProgramFiles(x86)") == null ? 32 : 64) : (System.getProperty("os.arch").contains("64") ? 64 : 32);
+    private final static int OS_ARCH = isWindows()
+            ? (System.getenv("ProgramFiles(x86)") == null ? 32 : 64)
+            : (System.getProperty("os.arch").contains("64") ? 64 : 32);
 
     /**
      * @return Возвращает ID операционной системы
@@ -55,20 +57,6 @@ public class OSUtils {
     }
 
     /**
-     * @return Возвращает разрядность системы 32 или 64
-     */
-    public static int getOsArch() {
-        return OS_ARCH;
-    }
-
-    /**
-     * @return Возвращает true если система 32-х разрядная
-     */
-    public static boolean isI586() {
-        return OS_ARCH != 64;
-    }
-
-    /**
      * @return Возвращает true если система 64-х разрядная
      */
     public static boolean isX64() {
@@ -87,14 +75,6 @@ public class OSUtils {
      */
     public static boolean isWindows() {
         return OS_ID == 1;
-    }
-
-    /**
-     * @return Возвращает true при работе конкретно на Windows 10
-     */
-    public static boolean isWindowsTen() {
-        OperatingSystemMXBean operatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean();
-        return operatingSystemMXBean.getName().equalsIgnoreCase("windows 10") && operatingSystemMXBean.getVersion().startsWith("10.");
     }
 
     /**
@@ -139,32 +119,7 @@ public class OSUtils {
             }
     }
 
-    public static void openFileInSystemExplorer(Path path) {
-        openFileInSystemExplorer(path.toFile());
-    }
-
-    public static void openFileInSystemExplorer(File path) {
-
-        if (OSUtils.isLinux()) {
-            new Thread(() -> {
-                try {
-                    Desktop.getDesktop().open(path);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }).start();
-            return;
-        }
-
-        try {
-            Desktop.getDesktop().open(path);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public static String getProcessorName() {
         return new SystemInfo().getHardware().getProcessor().getProcessorIdentifier().getName();
     }
-
 }

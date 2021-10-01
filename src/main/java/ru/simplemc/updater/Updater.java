@@ -1,20 +1,28 @@
 package ru.simplemc.updater;
 
+import lombok.Getter;
 import ru.simplemc.updater.gui.Frame;
-import ru.simplemc.updater.gui.pane.WelcomePane;
 import ru.simplemc.updater.thread.UpdateThread;
 import ru.simplemc.updater.utils.ProgramUtils;
 
-import static ru.simplemc.updater.service.TempFilesRemover.removeTempFiles;
-
 public class Updater {
 
-    public static void main(String... args) {
-        ProgramUtils.prepareSystemEnv();
-        Frame frame = new Frame();
-        frame.setPane(new WelcomePane());
-        Thread updaterThread = new UpdateThread(frame);
-        updaterThread.start();
-    }
+    @Getter
+    private static Frame frame;
+    @Getter
+    private static UpdateThread thread;
 
+    public static void main(String... args) {
+
+        ProgramUtils.prepareSystemEnv();
+
+        frame = new Frame();
+        frame.setStatus("Приветствую!", "Подготовка...");
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+
+        thread = new UpdateThread();
+        thread.start();
+    }
 }
