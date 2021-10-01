@@ -36,7 +36,7 @@ public class DownloaderService {
         }
 
         if (fileName.startsWith("jre-")) {
-            return "Скачивание Java Runtime...";
+            return "Скачивание игровой версии Java...";
         }
 
         return fileName;
