@@ -13,7 +13,7 @@ public class PaneTextStatus extends PaneBase {
     protected int posY;
 
     public PaneTextStatus(String title, String message) {
-        this(title, message, OSUtils.isWindows() ? 62 : 70);
+        this(title, message, 68);
     }
 
     public PaneTextStatus(String title, String message, int posY) {

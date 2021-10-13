@@ -18,9 +18,7 @@ public class PaneDownloader extends PaneTextStatus {
 
     @Override
     protected void paintComponent(Graphics graphics) {
-        this.posY = progressBar.isVisible()
-                ? OSUtils.isWindows() ? 52 : 60
-                : OSUtils.isWindows() ? 62 : 70;
+        this.posY = progressBar.isVisible() ? 58 : 68;
         super.paintComponent(graphics);
     }
 }
