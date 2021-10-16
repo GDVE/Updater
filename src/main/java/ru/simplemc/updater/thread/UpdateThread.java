@@ -18,6 +18,7 @@ import ru.simplemc.updater.utils.OSUtils;
 import ru.simplemc.updater.utils.ProgramUtils;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -59,16 +60,25 @@ public class UpdateThread extends Thread {
             LauncherRuntime launcherRuntime = (LauncherRuntime) downloaderFiles.get(2);
 
             try {
-                LauncherExecutor executor = new LauncherExecutor(
-                        Updater.getFrame(),
-                        launcherRuntime.getExecutablePath(), launcherFile.getPath().toString()
-                );
-                executor.execute();
+
+                Optional<Path> executablePath = launcherRuntime.getExecutablePath();
+
+                if (executablePath.isPresent()) {
+                    LauncherExecutor executor = new LauncherExecutor(executablePath.get(), launcherFile.getPath());
+                    executor.execute();
+                } else {
+                    Updater.getFrame().setStatus("Произошла ошибка", "Не удалось обнаружить JRE!");
+                    return;
+                }
+
             } catch (IOException e) {
-                e.printStackTrace();
+                Updater.getFrame().setStatus("Произошла ошибка", "Не удалось запустить лаунчер!");
+                return;
             }
+
         } else {
-            Updater.getFrame().setStatus("Произошла ошибка", "Не подключится к серверу!");
+            Updater.getFrame().setStatus("Произошла ошибка", "Не удалось подключится к серверу!");
+            return;
         }
 
         ProgramUtils.haltProgram();

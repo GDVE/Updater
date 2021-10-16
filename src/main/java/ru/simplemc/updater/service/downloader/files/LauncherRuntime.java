@@ -19,6 +19,7 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -53,8 +54,10 @@ public class LauncherRuntime extends DownloaderFile {
 
     @Override
     public boolean isInvalid() {
-
         try {
+            if (!getExecutablePath().isPresent()) {
+                return true;
+            }
             if (Files.exists(getPath()) && Files.size(getPath()) != getSize()) {
                 return true;
             }
@@ -111,14 +114,12 @@ public class LauncherRuntime extends DownloaderFile {
         FilesUtils.deleteFile(getPath());
     }
 
-    public String getExecutablePath() throws IOException {
+    public Optional<Path> getExecutablePath() throws IOException {
         return Files.find(directory,
                 Integer.MAX_VALUE,
                 (path, attributes) -> attributes.isRegularFile()
                         && path.getFileName().toString().endsWith("java")
-                        || path.getFileName().toString().endsWith("java.exe"))
-                .collect(Collectors.toList()).stream().findFirst()
-                .map(Path::toString).orElse(null);
+                        || path.getFileName().toString().endsWith("java.exe")).findAny();
     }
 
     private void resolveFilesPermissions() {
@@ -134,7 +135,7 @@ public class LauncherRuntime extends DownloaderFile {
 
         try {
             Files.find(directory, Integer.MAX_VALUE,
-                    ((path, attributes) -> attributes.isRegularFile()))
+                            ((path, attributes) -> attributes.isRegularFile()))
                     .forEach(path -> {
                         try {
                             Files.setPosixFilePermissions(path, permissionSet);

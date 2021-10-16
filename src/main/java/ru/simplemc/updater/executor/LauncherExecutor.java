@@ -1,5 +1,6 @@
 package ru.simplemc.updater.executor;
 
+import ru.simplemc.updater.Updater;
 import ru.simplemc.updater.gui.Frame;
 import ru.simplemc.updater.gui.pane.PaneTextStatus;
 import ru.simplemc.updater.utils.OSUtils;
@@ -8,6 +9,7 @@ import ru.simplemc.updater.utils.ProgramUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,10 +18,10 @@ public class LauncherExecutor {
     private final String runtimeExecutableFilePath;
     private final String launcherExecutableFilePath;
 
-    public LauncherExecutor(Frame frame, String runtimeExecutableFilePath, String launcherExecutableFilePath) {
-        this.runtimeExecutableFilePath = runtimeExecutableFilePath;
-        this.launcherExecutableFilePath = launcherExecutableFilePath;
-        frame.setPane(new PaneTextStatus("Все обновлено", "Запуск лаунчера..."));
+    public LauncherExecutor(Path runtimeExecutableFilePath, Path launcherExecutableFilePath) {
+        this.runtimeExecutableFilePath = runtimeExecutableFilePath.toString();
+        this.launcherExecutableFilePath = launcherExecutableFilePath.toString();
+        Updater.getFrame().setPane(new PaneTextStatus("Все обновлено", "Запуск лаунчера..."));
     }
 
     public void execute() throws IOException {
@@ -31,7 +33,9 @@ public class LauncherExecutor {
         processPrams.add(launcherExecutableFilePath);
 
         ProcessBuilder processBuilder = new ProcessBuilder(processPrams);
-        waitForProcessStart(processBuilder.start());
+        Process process = processBuilder.start();
+
+        waitForProcessStart(process);
     }
 
     /**

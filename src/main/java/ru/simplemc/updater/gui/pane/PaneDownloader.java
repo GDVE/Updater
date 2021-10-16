@@ -9,7 +9,7 @@ import java.awt.*;
 public class PaneDownloader extends PaneTextStatus {
 
     @Getter
-    private final ProgressBar progressBar = new ProgressBar();
+    private final ProgressBar progressBar = new ProgressBar(this);
 
     public PaneDownloader() {
         super("Подготовка", "Пожалуйста подождите...");
@@ -18,7 +18,11 @@ public class PaneDownloader extends PaneTextStatus {
 
     @Override
     protected void paintComponent(Graphics graphics) {
-        this.posY = progressBar.isVisible() ? 58 : 68;
+        this.posY = progressBar.isVisible() ? this.posY - 6 : this.calcDefaultPosY();
         super.paintComponent(graphics);
+    }
+
+    public int getProgressBarPosY() {
+        return this.posY + 36;
     }
 }

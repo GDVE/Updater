@@ -36,7 +36,8 @@ public class ProgramUtils {
                 return CryptUtils.md5(programPath);
         }
 
-        MessageUtils.printErrorWithShutdown("Ошибка доступа к файлу лаунчера", "Не удалось определить контрольную сумму лаунчера.");
+        MessageUtils.printErrorWithShutdown("Ошибка доступа к файлу лаунчера",
+                "Не удалось определить контрольную сумму лаунчера.");
         haltProgram();
         return "";
     }

@@ -1,6 +1,7 @@
 package ru.simplemc.updater.gui.pane;
 
 import ru.simplemc.updater.Environment;
+import ru.simplemc.updater.Updater;
 import ru.simplemc.updater.utils.OSUtils;
 import ru.simplemc.updater.utils.ResourcesUtils;
 
@@ -13,12 +14,8 @@ public class PaneTextStatus extends PaneBase {
     protected int posY;
 
     public PaneTextStatus(String title, String message) {
-        this(title, message, 68);
-    }
-
-    public PaneTextStatus(String title, String message, int posY) {
         this.setCurrentStatus(title, message);
-        this.posY = posY;
+        this.posY = this.calcDefaultPosY();
     }
 
     @Override
@@ -42,5 +39,9 @@ public class PaneTextStatus extends PaneBase {
         );
 
         graphics.drawString(string, 34, posY);
+    }
+
+    protected int calcDefaultPosY() {
+        return (int) (Updater.getFrame().getPreferredSize().getHeight() / 2) - 24;
     }
 }
