@@ -12,6 +12,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 public class ProgramUtils {
 
@@ -133,5 +134,10 @@ public class ProgramUtils {
         }
 
         System.exit(0);
+    }
+
+    public static Process createNewProcess(List<String> params) throws IOException {
+        ProcessBuilder builder = new ProcessBuilder(params);
+        return builder.start();
     }
 }

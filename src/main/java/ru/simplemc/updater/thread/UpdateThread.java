@@ -5,7 +5,7 @@ import ru.simplemc.updater.Environment;
 import ru.simplemc.updater.Updater;
 import ru.simplemc.updater.executor.LauncherExecutor;
 import ru.simplemc.updater.gui.utils.MessageUtils;
-import ru.simplemc.updater.service.downloader.DownloaderService;
+import ru.simplemc.updater.service.downloader.DownloadingProcess;
 import ru.simplemc.updater.service.downloader.beans.DownloaderFile;
 import ru.simplemc.updater.service.downloader.files.LauncherFile;
 import ru.simplemc.updater.service.downloader.files.LauncherRuntime;
@@ -46,9 +46,9 @@ public class UpdateThread extends Thread {
             downloaderFiles.stream()
                     .filter(DownloaderFile::isInvalid)
                     .forEach(downloaderFile -> {
-                        DownloaderService downloaderService = new DownloaderService(downloaderFile);
+                        DownloadingProcess downloadingProcess = new DownloadingProcess(downloaderFile);
                         try {
-                            downloaderService.process();
+                            downloadingProcess.run();
                         } catch (IOException e) {
                             e.printStackTrace();
                             MessageUtils.printFullStackTraceWithExit("Не удалось загрузить файл: "

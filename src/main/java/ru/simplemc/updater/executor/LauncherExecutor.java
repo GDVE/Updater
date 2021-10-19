@@ -26,16 +26,13 @@ public class LauncherExecutor {
 
     public void execute() throws IOException {
 
-        List<String> processPrams = new ArrayList<>();
-        processPrams.add(runtimeExecutableFilePath);
-        if (OSUtils.isMacOS()) processPrams.add("-Xdock:name=SimpleMinecraft.Ru - Launcher");
-        processPrams.add("-jar");
-        processPrams.add(launcherExecutableFilePath);
+        List<String> params = new ArrayList<>();
+        params.add(runtimeExecutableFilePath);
+        if (OSUtils.isMacOS()) params.add("-Xdock:name=SimpleMinecraft.Ru - Launcher");
+        params.add("-jar");
+        params.add(launcherExecutableFilePath);
 
-        ProcessBuilder processBuilder = new ProcessBuilder(processPrams);
-        Process process = processBuilder.start();
-
-        waitForProcessStart(process);
+        waitForProcessStart(ProgramUtils.createNewProcess(params));
     }
 
     /**
@@ -45,17 +42,16 @@ public class LauncherExecutor {
      */
     private void waitForProcessStart(Process process) {
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        String line;
-
-        try {
-            while ((line = reader.readLine()) != null)
-                if (line.contains("Launcher is started")) {
-                    break;
-                }
-        } catch (IOException ignored) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            String line;
+            long startingTime = System.currentTimeMillis();
+            while ((line = reader.readLine()) != null && !line.contains("Launcher is started")) {
+                if (startingTime >= System.currentTimeMillis() + 30000) break;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        //ProgramUtils.haltProgram();
+        ProgramUtils.haltProgram();
     }
 }

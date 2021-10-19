@@ -1,6 +1,5 @@
 package ru.simplemc.updater.service.downloader.files;
 
-import org.apache.commons.io.IOUtils;
 import ru.simplemc.updater.gui.utils.MessageUtils;
 import ru.simplemc.updater.service.downloader.beans.DownloaderFile;
 import ru.simplemc.updater.service.downloader.beans.FileInfo;
@@ -36,49 +35,43 @@ public class UpdaterFile extends DownloaderFile {
     public void prepareBeforeDownload() throws IOException {
         super.prepareBeforeDownload();
 
-        InputStream inputStream = null;
-        OutputStream outputStream = null;
-
         appMoverPath = Paths.get(ProgramUtils.getStoragePath() + "/libs/AppMover-1.0.1.jar");
         Files.createDirectories(appMoverPath.getParent());
 
-        try {
-            inputStream = UpdaterFile.class.getResourceAsStream("/assets/mover/AppMover-1.0.1.app");
-            outputStream = new FileOutputStream(Paths.get(ProgramUtils.getStoragePath() +
-                    "/libs/AppMover-1.0.1.jar").toFile());
+        try (InputStream inputStream = UpdaterFile.class.getResourceAsStream("/assets/mover/AppMover-1.0.1.app");
+             OutputStream outputStream = new FileOutputStream(Paths.get(ProgramUtils.getStoragePath() +
+                     "/libs/AppMover-1.0.1.jar").toFile())) {
 
-            byte[] buffer = new byte[4096];
+            if (inputStream == null) {
+                throw new IOException("AppMover is not present!");
+            }
+
+            byte[] buffer = new byte[1024];
             int bufferSize;
 
             while ((bufferSize = inputStream.read(buffer, 0, buffer.length)) >= 0) {
                 outputStream.write(buffer, 0, bufferSize);
             }
-
-        } finally {
-            IOUtils.closeQuietly(inputStream);
-            IOUtils.closeQuietly(outputStream);
         }
     }
 
     @Override
     public void prepareAfterDownload() throws IOException {
 
-        MessageUtils.printSuccess("Обновление программы загружено!", "Сейчас запустится процесс обновления " +
-                "программы.\nЕсли в течении 5 - 10 секунд ничего не произойдет, то попробуйте запустить программу снова, " +
-                "\nлибо во время обновления возникнут ошибки, то просто скачайте лаунчер с сайта, там всегда доступна " +
-                "самая новая версия!" +
-                "\n\nМы работаем для вас! Желаем приятной игры!");
+        MessageUtils.printSuccess("Обновление программы загружено!",
+                "Сейчас запустится процесс обновления программы." +
+                        "\nЕсли в течении 5 - 10 секунд ничего не произойдет, " +
+                        "\nпопробуйте запустить программу снова или перекачайте ее с нашего сайта." +
+                        "\n\nЖелаем приятной игры!");
 
-        List<String> args = new ArrayList<>();
-        args.add("java");
-        args.add("-jar");
-        args.add(appMoverPath.toString());
-        args.add(this.getPath().toString());
-        args.add(Objects.requireNonNull(ProgramUtils.getProgramPath()).toString());
+        List<String> params = new ArrayList<>();
+        params.add("java");
+        params.add("-jar");
+        params.add(appMoverPath.toString());
+        params.add(this.getPath().toString());
+        params.add(Objects.requireNonNull(ProgramUtils.getProgramPath()).toString());
 
-        ProcessBuilder builder = new ProcessBuilder(args);
-        builder.start();
-
+        ProgramUtils.createNewProcess(params);
         ProgramUtils.haltProgram();
     }
 }
