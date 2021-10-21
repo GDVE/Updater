@@ -10,7 +10,7 @@ import ru.simplemc.updater.service.downloader.beans.DownloaderFile;
 import ru.simplemc.updater.service.downloader.files.LauncherFile;
 import ru.simplemc.updater.service.downloader.files.LauncherRuntime;
 import ru.simplemc.updater.service.downloader.files.UpdaterFile;
-import ru.simplemc.updater.service.http.HttpServiceManager;
+import ru.simplemc.updater.service.http.HttpService;
 import ru.simplemc.updater.service.http.beans.CheckUpdatesRequest;
 import ru.simplemc.updater.service.http.beans.CheckUpdatesResponse;
 import ru.simplemc.updater.service.http.beans.TypedResponse;
@@ -32,10 +32,13 @@ public class UpdateThread extends Thread {
     @Override
     public void run() {
 
+        Updater.getLogger().info("Checking for updates...");
+
         Optional<CheckUpdatesResponse> optionalResponse = getCheckUpdatesResponse();
 
         if (optionalResponse.isPresent()) {
 
+            Updater.getLogger().info("Checking for files...");
             Updater.getFrame().setStatus("Поиск обновлений", "Проверка файлов...");
             CheckUpdatesResponse response = optionalResponse.get();
 
@@ -50,14 +53,17 @@ public class UpdateThread extends Thread {
                         try {
                             downloadingProcess.run();
                         } catch (IOException e) {
-                            e.printStackTrace();
-                            MessageUtils.printFullStackTraceWithExit("Не удалось загрузить файл: "
-                                    + downloaderFile.getName(), e);
+                            Updater.getLogger().error("Failed to download file "
+                                    + downloaderFile.getPath() + ":", e);
+                            MessageUtils.printErrorWithShutdown("Произошла ошибка",
+                                    "Не удалось загрузить файл:\n" + downloaderFile.getPath());
                         }
                     });
 
             LauncherFile launcherFile = (LauncherFile) downloaderFiles.get(1);
             LauncherRuntime launcherRuntime = (LauncherRuntime) downloaderFiles.get(2);
+
+            Updater.getLogger().info("Starting Launcher application...");
 
             try {
 
@@ -66,17 +72,20 @@ public class UpdateThread extends Thread {
                 if (executablePath.isPresent()) {
                     LauncherExecutor executor = new LauncherExecutor(executablePath.get(), launcherFile.getPath());
                     executor.execute();
+                    Updater.getLogger().info("Launcher application is started!");
                 } else {
                     Updater.getFrame().setStatus("Произошла ошибка", "Не удалось обнаружить JRE!");
                     return;
                 }
 
             } catch (IOException e) {
+                Updater.getLogger().error("Failed to start Launcher application:", e);
                 Updater.getFrame().setStatus("Произошла ошибка", "Не удалось запустить лаунчер!");
                 return;
             }
 
         } else {
+            Updater.getLogger().error("Failed to checking updates");
             Updater.getFrame().setStatus("Произошла ошибка", "Не удалось подключится к серверу!");
             return;
         }
@@ -86,26 +95,33 @@ public class UpdateThread extends Thread {
 
     private Optional<CheckUpdatesResponse> getCheckUpdatesResponse() {
 
+        HttpService httpService = Updater.getHttpService();
         CheckUpdatesRequest request = new CheckUpdatesRequest();
         request.setSystemId(OSUtils.getSystemIdWithArch());
-        request.setApplicationFormat(ProgramUtils.getExecutableFileExtension());
+        request.setApplicationFormat(ProgramUtils.getProgramExtension());
 
         String result;
         try {
-            result = HttpServiceManager.performPostRequest(Environment.API_DOMAIN + "/launcher/checkUpdates", request);
+            result = httpService.performPostRequest(Environment.API_DOMAIN + "/launcher/checkUpdates", request);
         } catch (IOException e) {
-            MessageUtils.printFullStackTraceWithExit("Произошла ошибка при обработки данных!", e);
+
+            Updater.getLogger().error("Failed to get updates:", e);
+            MessageUtils.printErrorWithShutdown("Произошла ошибка",
+                    "Не удалось получить информацию о обновлении!");
+
             return Optional.empty();
         }
 
         try {
-            return Optional.of(HttpServiceManager.getMapper().readValue(result, CheckUpdatesResponse.class));
+            return Optional.of(httpService.getMapper().readValue(result, CheckUpdatesResponse.class));
         } catch (JsonProcessingException e) {
             try {
-                TypedResponse response = HttpServiceManager.getMapper().readValue(result, TypedResponse.class);
+                TypedResponse response = httpService.getMapper().readValue(result, TypedResponse.class);
                 MessageUtils.printErrorWithShutdown(response.getTitle(), response.getMessage());
             } catch (JsonProcessingException e1) {
-                MessageUtils.printFullStackTraceWithExit("Произошла ошибка при обработки данных!", e1);
+                Updater.getLogger().error("Failed to get updates:", e1);
+                MessageUtils.printErrorWithShutdown("Произошла ошибка",
+                        "Не удалось обработать информацию о обновлении!");
             }
         }
 

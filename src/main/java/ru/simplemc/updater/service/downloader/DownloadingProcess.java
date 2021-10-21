@@ -4,7 +4,6 @@ import ru.simplemc.updater.Updater;
 import ru.simplemc.updater.gui.pane.PaneDownloader;
 import ru.simplemc.updater.service.downloader.beans.DownloaderFile;
 import ru.simplemc.updater.service.downloader.files.LauncherRuntime;
-import ru.simplemc.updater.service.http.HttpServiceManager;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -60,7 +59,8 @@ public class DownloadingProcess {
             int errorsCounter = 0;
 
             while (true) {
-                System.out.println("Retry downloading file: " + file.getUrl());
+
+                Updater.getHttpService().getLogger().info("Retry downloading file: " + file.getUrl());
 
                 try {
                     downloadFile(true);
@@ -85,7 +85,7 @@ public class DownloadingProcess {
 
     private void downloadFile(boolean canSkip) throws IOException, DownloadNotCompleteException {
 
-        HttpURLConnection connection = HttpServiceManager.createConnection(file.getUrl());
+        HttpURLConnection connection = Updater.getHttpService().createConnection(file.getUrl());
 
         if (canSkip) {
             connection.setRequestProperty("Range", "bytes=" + Files.size(file.getPath()) + "-" + file.getSize());
@@ -107,6 +107,8 @@ public class DownloadingProcess {
             downloaderPane.getProgressBar().setVisible(false);
             throw e;
         }
+
+        Updater.getHttpService().getLogger().info("Connection closed.");
 
         if (!Files.exists(file.getPath()) || Files.size(file.getPath()) < file.getSize()) {
             throw new DownloadNotCompleteException();

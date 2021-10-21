@@ -1,5 +1,7 @@
 package ru.simplemc.updater.utils;
 
+import ru.simplemc.updater.Updater;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -32,8 +34,7 @@ public class FilesUtils {
         try {
             Files.deleteIfExists(path);
         } catch (IOException e) {
-            System.out.println("Неудалось удалить файл: " + path);
-            e.printStackTrace();
+            Updater.getLogger().error("Failed to delete file: " + path, e);
         }
     }
 }

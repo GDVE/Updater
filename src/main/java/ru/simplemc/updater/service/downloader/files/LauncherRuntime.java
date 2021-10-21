@@ -92,20 +92,7 @@ public class LauncherRuntime extends DownloaderFile {
     @Override
     public void prepareAfterDownload() throws IOException {
 
-        File archiveFile = getPath().toFile();
-        File extractionDirectory = directory.getParent().toFile();
-
-        if (this.getName().endsWith(".zip")) {
-            try {
-                CompressedUtils.unZipArchive(archiveFile, extractionDirectory);
-            } catch (Exception e) {
-                Archiver archiver = ArchiverFactory.createArchiver(archiveFile);
-                archiver.extract(archiveFile, extractionDirectory);
-            }
-        } else {
-            Archiver archiver = ArchiverFactory.createArchiver(archiveFile);
-            archiver.extract(archiveFile, extractionDirectory);
-        }
+        CompressedUtils.extractArchive(getPath().toFile(), getPath().getParent().toFile());
 
         mapping.put("archiveHash", this.getMd5());
         mapping.scanAndWriteToDisk();

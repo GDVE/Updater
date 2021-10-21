@@ -3,6 +3,7 @@ package ru.simplemc.updater.service.downloader;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
+import ru.simplemc.updater.Updater;
 import ru.simplemc.updater.gui.utils.MessageUtils;
 import ru.simplemc.updater.service.downloader.beans.DownloaderFile;
 
@@ -96,7 +97,9 @@ public class FilesMapping extends HashMap<String, String> {
             try {
                 this.put(path, Files.size(path));
             } catch (IOException e) {
-                MessageUtils.printFullStackTraceWithExit("Неудалось обратится к файлу: " + path, e);
+                Updater.getLogger().error("Failed to scan file " + path + ":", e);
+                MessageUtils.printErrorWithShutdown("Произошла ошибка",
+                        "Не удалось сохранить информацию о файле:\n" + path);
             }
         });
 

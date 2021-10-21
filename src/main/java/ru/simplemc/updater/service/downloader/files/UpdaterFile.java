@@ -1,6 +1,7 @@
 package ru.simplemc.updater.service.downloader.files;
 
-import ru.simplemc.updater.gui.utils.MessageUtils;
+import ru.simplemc.updater.Environment;
+import ru.simplemc.updater.Updater;
 import ru.simplemc.updater.service.downloader.beans.DownloaderFile;
 import ru.simplemc.updater.service.downloader.beans.FileInfo;
 import ru.simplemc.updater.utils.CryptUtils;
@@ -19,10 +20,12 @@ import java.util.Objects;
 
 public class UpdaterFile extends DownloaderFile {
 
-    private Path appMoverPath;
+    private final Path appMoverPath;
 
     public UpdaterFile(FileInfo fileInfo) {
         super(fileInfo);
+        this.appMoverPath = Paths.get(ProgramUtils.getStoragePath() + "/runtime/AppMover-"
+                + Environment.APP_MOVER_VERSION + ".jar");
     }
 
     @Override
@@ -35,41 +38,47 @@ public class UpdaterFile extends DownloaderFile {
     public void prepareBeforeDownload() throws IOException {
         super.prepareBeforeDownload();
 
-        appMoverPath = Paths.get(ProgramUtils.getStoragePath() + "/libs/AppMover-1.0.1.jar");
-        Files.createDirectories(appMoverPath.getParent());
+        if (!Files.exists(appMoverPath)) {
 
-        try (InputStream inputStream = UpdaterFile.class.getResourceAsStream("/assets/mover/AppMover-1.0.1.app");
-             OutputStream outputStream = new FileOutputStream(Paths.get(ProgramUtils.getStoragePath() +
-                     "/libs/AppMover-1.0.1.jar").toFile())) {
+            Files.createDirectories(appMoverPath.getParent());
 
-            if (inputStream == null) {
-                throw new IOException("AppMover is not present!");
-            }
+            try (InputStream inputStream = getAppMoverResource();
+                 OutputStream outputStream = new FileOutputStream(appMoverPath.toFile())) {
 
-            byte[] buffer = new byte[1024];
-            int bufferSize;
+                if (inputStream == null) {
+                    throw new IOException("AppMover is not present!");
+                }
 
-            while ((bufferSize = inputStream.read(buffer, 0, buffer.length)) >= 0) {
-                outputStream.write(buffer, 0, bufferSize);
+                byte[] buffer = new byte[1024];
+                int bufferSize;
+
+                while ((bufferSize = inputStream.read(buffer, 0, buffer.length)) >= 0) {
+                    outputStream.write(buffer, 0, bufferSize);
+                }
             }
         }
+    }
+
+    private InputStream getAppMoverResource() {
+        return getClass().getResourceAsStream("/assets/mover/" + appMoverPath.getFileName().toString()
+                .replace(".jar", ".app"));
     }
 
     @Override
     public void prepareAfterDownload() throws IOException {
 
-        MessageUtils.printSuccess("Обновление программы загружено!",
-                "Сейчас запустится процесс обновления программы." +
-                        "\nЕсли в течении 5 - 10 секунд ничего не произойдет, " +
-                        "\nпопробуйте запустить программу снова или перекачайте ее с нашего сайта." +
-                        "\n\nЖелаем приятной игры!");
-
         List<String> params = new ArrayList<>();
         params.add("java");
         params.add("-jar");
         params.add(appMoverPath.toString());
-        params.add(this.getPath().toString());
+        params.add(path.toString());
         params.add(Objects.requireNonNull(ProgramUtils.getProgramPath()).toString());
+
+        try {
+            Updater.getFrame().setStatus("Обновление", "Перезапуск программы...");
+            Thread.sleep(1000);
+        } catch (InterruptedException ignored) {
+        }
 
         ProgramUtils.createNewProcess(params);
         ProgramUtils.haltProgram();

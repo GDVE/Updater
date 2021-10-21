@@ -19,15 +19,16 @@ public class LauncherExecutor {
     private final String launcherExecutableFilePath;
 
     public LauncherExecutor(Path runtimeExecutableFilePath, Path launcherExecutableFilePath) {
+        Updater.getFrame().setPane(new PaneTextStatus("Все обновлено", "Запуск лаунчера..."));
         this.runtimeExecutableFilePath = runtimeExecutableFilePath.toString();
         this.launcherExecutableFilePath = launcherExecutableFilePath.toString();
-        Updater.getFrame().setPane(new PaneTextStatus("Все обновлено", "Запуск лаунчера..."));
     }
 
     public void execute() throws IOException {
 
         List<String> params = new ArrayList<>();
         params.add(runtimeExecutableFilePath);
+        params.add("-Dlaunched=true");
         if (OSUtils.isMacOS()) params.add("-Xdock:name=SimpleMinecraft.Ru - Launcher");
         params.add("-jar");
         params.add(launcherExecutableFilePath);
@@ -51,7 +52,5 @@ public class LauncherExecutor {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        ProgramUtils.haltProgram();
     }
 }

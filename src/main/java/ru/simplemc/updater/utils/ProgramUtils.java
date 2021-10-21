@@ -16,16 +16,10 @@ import java.util.List;
 
 public class ProgramUtils {
 
-    /**
-     * @return - возвращает true если программа запущена в режиме разработки/отладки
-     */
     public static boolean isDebugMode() {
         return getProgramMD5Hash().equals("4f9b53500448cf766c81c7e68d614283");
     }
 
-    /**
-     * @return Возвращает текущую контрольную сумму (MD5) программы.
-     */
     public static String getProgramMD5Hash() {
 
         Path programPath = getProgramPath();
@@ -37,15 +31,14 @@ public class ProgramUtils {
                 return CryptUtils.md5(programPath);
         }
 
+        Updater.getLogger().error("Failed to get program hash!");
         MessageUtils.printErrorWithShutdown("Ошибка доступа к файлу лаунчера",
-                "Не удалось определить контрольную сумму лаунчера.");
+                "Не удалось определить контрольную сумму программы.");
+
         haltProgram();
         return "";
     }
 
-    /**
-     * Подготовка системых параметров для работы программы
-     */
     public static void prepareSystemEnv() {
 
         System.setProperty("java.net.preferIPv4Stack", "true");
@@ -60,24 +53,25 @@ public class ProgramUtils {
         }
     }
 
-    /**
-     * @return Возвращает полный путь до исполняемого файла программы.
-     */
     public static Path getProgramPath() {
 
         try {
             return Paths.get(Updater.class.getProtectionDomain().getCodeSource().getLocation().toURI());
         } catch (URISyntaxException e) {
-            MessageUtils.printFullStackTraceWithExit("Не удалось определить расположение исполняемого файла лаунчера", e);
+            Updater.getLogger().error("Failed to get program path:", e);
+            MessageUtils.printErrorWithShutdown("",
+                    "Не удалось определить расположение исполняемого файла лаунчера");
             haltProgram();
         }
 
         return null;
     }
 
-    /**
-     * @return Возвращает полный путь до рабочей папки прграммы.
-     */
+    public static String getProgramExtension() {
+        Path programPath = getProgramPath();
+        return programPath != null && programPath.getFileName().toString().endsWith(".exe") ? "exe" : "jar";
+    }
+
     public static Path getStoragePath() {
 
         Path path;
@@ -104,35 +98,17 @@ public class ProgramUtils {
                 if (!Files.isDirectory(path)) Files.delete(path);
             } else Files.createDirectory(path);
         } catch (IOException e) {
-            MessageUtils.printFullStackTraceWithExit("Не удалось создать рабочую директорию лаунчера", e);
+            Updater.getLogger().error("Failed to create storage dir:", e);
+            MessageUtils.printErrorWithShutdown("Произошла ошибка",
+                    "Не удалось создать рабочую директорию лаунчера");
             haltProgram();
         }
 
         return path;
     }
 
-    /**
-     * @return Возвращает текущее расширение исполняемого файла программы.
-     */
-    public static String getExecutableFileExtension() {
-        Path programPath = getProgramPath();
-        return programPath != null && programPath.getFileName().toString().endsWith(".exe") ? "exe" : "jar";
-    }
-
-    /**
-     * Так сказать полное заверешние процесса программы.
-     */
     public static void haltProgram() {
-
-        try {
-            Class<?> af = Class.forName("java.lang.Shutdown");
-            Method m = af.getDeclaredMethod("halt0", int.class);
-            m.setAccessible(true);
-            m.invoke(null, 0);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
+        Updater.getLogger().info("Program is closed! Bye-bye!");
         System.exit(0);
     }
 

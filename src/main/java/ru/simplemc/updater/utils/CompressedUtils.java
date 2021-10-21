@@ -1,9 +1,10 @@
 package ru.simplemc.updater.utils;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import org.rauschig.jarchivelib.Archiver;
+import org.rauschig.jarchivelib.ArchiverFactory;
+import ru.simplemc.updater.Updater;
+
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.zip.ZipEntry;
@@ -11,42 +12,55 @@ import java.util.zip.ZipInputStream;
 
 public class CompressedUtils {
 
-    public static void unZipArchive(File archiveFile, File extractDirectory) {
+    public static void extractArchive(File archive, File directoryTo) throws IOException {
+
         try {
-            FileInputStream fileInputStream = new FileInputStream(archiveFile);
-            ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(fileInputStream));
-            ZipEntry zipEntry;
-
-            while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-                extractFromZip(zipEntry, zipInputStream, extractDirectory);
+            if (archive.getName().endsWith(".zip")) {
+                CompressedUtils.extractZipArchive(archive, directoryTo);
+                return;
             }
+        } catch (IOException e) {
+            Updater.getLogger().error("Failed to extract " + archive.getName() +
+                    " archive with legacy method:", e);
+        }
 
-            zipInputStream.close();
-            fileInputStream.close();
-        } catch (Exception exception) {
-            exception.printStackTrace();
+        Archiver archiver = ArchiverFactory.createArchiver(archive);
+        archiver.extract(archive, directoryTo);
+    }
+
+    private static void extractZipArchive(File archive, File directoryTo) throws IOException {
+        try (ZipInputStream inputStream = new ZipInputStream(new BufferedInputStream(
+                new FileInputStream(archive)))) {
+
+            ZipEntry entry;
+
+            while ((entry = inputStream.getNextEntry()) != null) {
+                extractZipEntry(entry, inputStream, directoryTo);
+            }
         }
     }
 
-    private static void extractFromZip(ZipEntry zipEntry, ZipInputStream zipInputStream, File extractDirectory) throws Exception {
-        if (zipEntry.isDirectory()) {
+    private static void extractZipEntry(ZipEntry entry, ZipInputStream inputStream, File directoryTo)
+            throws IOException {
+
+        if (entry.isDirectory()) {
             return;
         }
 
-        String zipEntryName = slashToFileSeparator(zipEntry.getName());
-        String zipEntryDirPath;
+        String entryName = slashToFileSeparator(entry.getName());
+        String entryParent;
 
-        if (zipEntryName.lastIndexOf(File.separator) != -1)
-            zipEntryDirPath = zipEntryName.substring(0, zipEntryName.lastIndexOf(File.separator));
+        if (entryName.lastIndexOf(File.separator) != -1)
+            entryParent = entryName.substring(0, entryName.lastIndexOf(File.separator));
         else
-            zipEntryDirPath = "";
+            entryParent = "";
 
-        Files.createDirectories(Paths.get(extractDirectory + File.separator + zipEntryDirPath));
-        FileOutputStream fileOutputStream = new FileOutputStream(extractDirectory + File.separator + zipEntryName);
+        Files.createDirectories(Paths.get(directoryTo + File.separator + entryParent));
+        FileOutputStream fileOutputStream = new FileOutputStream(directoryTo + File.separator + entryName);
         byte[] buffer = new byte[1024];
 
         while (true) {
-            int length = zipInputStream.read(buffer);
+            int length = inputStream.read(buffer);
             if (length < 0) break;
             fileOutputStream.write(buffer, 0, length);
         }
@@ -55,6 +69,7 @@ public class CompressedUtils {
     }
 
     private static String slashToFileSeparator(String source) {
+
         char[] chars = new char[source.length()];
 
         for (int i = 0; i < source.length(); i++) {

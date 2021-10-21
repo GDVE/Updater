@@ -12,15 +12,15 @@ import java.nio.file.Paths;
 public abstract class DownloaderFile {
 
     @Getter
-    private final Path path;
+    protected final Path path;
     @Getter
-    private final String name;
+    protected final String name;
     @Getter
-    private final String url;
+    protected final String url;
     @Getter
-    private final String md5;
+    protected final String md5;
     @Getter
-    private final Long size;
+    protected final Long size;
 
     public DownloaderFile(FileInfo fileInfo) {
         path = Paths.get(ProgramUtils.getStoragePath() + "/" + fileInfo.getPath()

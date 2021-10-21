@@ -6,6 +6,8 @@ public class Environment {
 
     public static String API_DOMAIN = "launcher.simpleminecraft.ru";
     public static final String HTTP_USER_AGENT = "SimpleMinecraft.Ru Launcher";
+    public static final String APP_MOVER_VERSION = "1.2.0";
+    public static final String VERSION = "[Fall Update - 2.0.6]";
 
     public static final int FRAME_WIDTH = 380;
     public static final int FRAME_HEIGHT = 180;
