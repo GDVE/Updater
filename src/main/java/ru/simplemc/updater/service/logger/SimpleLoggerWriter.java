@@ -30,7 +30,8 @@ public class SimpleLoggerWriter {
 
         try {
             if (!Files.exists(path.getParent())) {
-                Files.createDirectories(path);
+                Files.createDirectories(path.getParent());
+                Files.createDirectories(path.getParent());
             }
 
             if (!Files.exists(path)) {
