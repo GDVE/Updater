@@ -1,17 +1,14 @@
 package ru.simplemc.updater.service.downloader.files;
 
 import lombok.Getter;
-import org.rauschig.jarchivelib.Archiver;
-import org.rauschig.jarchivelib.ArchiverFactory;
 import ru.simplemc.updater.service.downloader.FilesMapping;
 import ru.simplemc.updater.service.downloader.beans.DownloaderFile;
 import ru.simplemc.updater.service.downloader.beans.FileInfo;
-import ru.simplemc.updater.utils.CompressedUtils;
+import ru.simplemc.updater.utils.ExtractionUtils;
 import ru.simplemc.updater.utils.FilesUtils;
 import ru.simplemc.updater.utils.OSUtils;
 import ru.simplemc.updater.utils.ProgramUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,7 +18,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class LauncherRuntime extends DownloaderFile {
 
@@ -92,7 +88,7 @@ public class LauncherRuntime extends DownloaderFile {
     @Override
     public void prepareAfterDownload() throws IOException {
 
-        CompressedUtils.extractArchive(getPath().toFile(), getPath().getParent().toFile());
+        ExtractionUtils.extractArchive(getPath().toFile(), getPath().getParent().toFile());
 
         mapping.put("archiveHash", this.getMd5());
         mapping.scanAndWriteToDisk();

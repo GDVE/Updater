@@ -10,13 +10,13 @@ import java.nio.file.Paths;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-public class CompressedUtils {
+public class ExtractionUtils {
 
     public static void extractArchive(File archive, File directoryTo) throws IOException {
 
         try {
             if (archive.getName().endsWith(".zip")) {
-                CompressedUtils.extractZipArchive(archive, directoryTo);
+                ExtractionUtils.extractZipArchive(archive, directoryTo);
                 return;
             }
         } catch (IOException e) {
