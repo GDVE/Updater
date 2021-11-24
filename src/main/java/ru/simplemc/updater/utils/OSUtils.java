@@ -2,6 +2,7 @@ package ru.simplemc.updater.utils;
 
 import oshi.SystemInfo;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
@@ -43,14 +44,13 @@ public class OSUtils {
      * @return Возвращает "красивое" имя операционной системы с учетом регистра
      */
     public static String getSystemIdWithArch() {
-
         switch (OS_ID) {
             case 0:
                 return isX64() ? "linux-x64" : "linux-i586";
             case 1:
                 return isX64() ? "windows-x64" : "windows-i586";
             case 2:
-                return getProcessorName().contains("M1") ? "macos-aarch64" : "macos-x64";
+                return isAppleChip() ? "macos-aarch64" : "macos-x64";
         }
 
         return isX64() ? "unknown-x64" : "unknown-i586";
@@ -121,5 +121,9 @@ public class OSUtils {
 
     public static String getProcessorName() {
         return new SystemInfo().getHardware().getProcessor().getProcessorIdentifier().getName();
+    }
+
+    public static boolean isAppleChip() {
+        return getProcessorName().contains("M1") || getProcessorName().contains("Apple");
     }
 }
