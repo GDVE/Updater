@@ -6,7 +6,6 @@ import ru.simplemc.updater.gui.utils.MessageUtils;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -41,6 +40,7 @@ public class ProgramUtils {
 
     public static void prepareSystemEnv() {
 
+        System.setProperty("log4j.workDir", getStoragePath().toString());
         System.setProperty("java.net.preferIPv4Stack", "true");
         System.setProperty("file.encoding", "UTF-8");
         System.setProperty("http.agent", Environment.HTTP_USER_AGENT);

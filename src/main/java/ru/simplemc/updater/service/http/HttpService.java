@@ -3,12 +3,9 @@ package ru.simplemc.updater.service.http;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import ru.simplemc.updater.Environment;
-import ru.simplemc.updater.service.logger.SimpleLogger;
+import ru.simplemc.updater.Updater;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -17,26 +14,32 @@ public class HttpService {
 
     @Getter
     private final ObjectMapper mapper = new ObjectMapper();
-    @Getter
-    private final SimpleLogger logger = new SimpleLogger(HttpService.class);
 
     private String workingProtocol = "https://";
+    private String currentDomain = ".ru";
 
-    private void changeWorkingProtocol() {
-        workingProtocol = "http://";
-        logger.info("Working protocol changed to: " + workingProtocol);
+    private void changeWorkingProtocol(String protocol) {
+        workingProtocol = protocol + "://";
     }
 
-    private boolean isWorkingProtocolSecure() {
-        return workingProtocol.equals("https://");
+    private void changeWorkingDomain(String domain) {
+        currentDomain = "." + domain;
+    }
+
+    private boolean isWorkingProtocolChanged() {
+        return workingProtocol.equals("http://");
+    }
+
+    private boolean isWorkingDomainChanged() {
+        return currentDomain.equals(".net");
     }
 
     public HttpURLConnection createConnection(String url) throws IOException {
-        return createConnection(new URL(workingProtocol + url));
+        return createConnection(new URL(workingProtocol + url.replace(".ru/", currentDomain + "/")));
     }
 
     public HttpURLConnection createConnection(URL url) throws IOException {
-        logger.info("Create connection to " + url);
+        Updater.getLogger().info("Create connection to " + url);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setConnectTimeout(15000);
         connection.setReadTimeout(15000);
@@ -45,16 +48,30 @@ public class HttpService {
         return connection;
     }
 
-    public String performPostRequest(String url, Object object) throws IOException {
+    public String performPostRequest(String path, Object object) throws IOException {
+
+        URL url = new URL(workingProtocol + path.replace(".ru/", currentDomain + "/"));
+
         try {
-            return performPostRequest(new URL(workingProtocol + url), mapper.writeValueAsString(object));
+            return performPostRequest(url, mapper.writeValueAsString(object));
         } catch (IOException e) {
-            if (isWorkingProtocolSecure()) {
-                changeWorkingProtocol();
-                return performPostRequest(url, object);
+            if (isWorkingProtocolChanged() && isWorkingDomainChanged()) {
+                Updater.getLogger().info("Reset domain and protocol to default...");
+                changeWorkingProtocol("https");
+                changeWorkingDomain("ru");
+                throw e;
+            } else if (!isWorkingProtocolChanged()) {
+                Updater.getLogger().info("Change working protocol to: HTTP");
+                changeWorkingProtocol("http");
+                return performPostRequest(path, object);
             }
 
-            throw e;
+            Updater.getLogger().info("Change working protocol to: HTTPS");
+            Updater.getLogger().info("Change working domain to: NET");
+            changeWorkingProtocol("https");
+            changeWorkingDomain("net");
+
+            return performPostRequest(path, object);
         }
     }
 
@@ -68,14 +85,33 @@ public class HttpService {
         connection.setRequestProperty("Content-Length", String.valueOf(dataBytes.length));
         connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
 
-        logger.info("Writing POST data to " + url + ": " + data);
+        Updater.getLogger().info("Writing POST data to " + url + ": " + data);
         try (OutputStream outputStream = connection.getOutputStream()) {
             outputStream.write(dataBytes);
         }
 
-        logger.info("Reading data from " + url);
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+        Updater.getLogger().info("Reading data from " + url);
 
+        try {
+
+            if (connection.getResponseCode() != 200) {
+                throw new IOException("Server response is not OK.");
+            }
+
+            String result = readBuffer(connection.getInputStream());
+            Updater.getLogger().info("Successful read, server response was " + connection.getResponseCode());
+            Updater.getLogger().info("Response: " + result);
+            return result;
+        } catch (IOException e) {
+            String result = readBuffer(connection.getErrorStream() == null ? connection.getInputStream() : connection.getErrorStream());
+            Updater.getLogger().info("Request failed, server response was " + connection.getResponseCode());
+            Updater.getLogger().info("Response: " + result);
+            throw e;
+        }
+    }
+
+    private String readBuffer(InputStream inputStream) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
             StringBuilder result = new StringBuilder();
             String line;
 
@@ -83,13 +119,7 @@ public class HttpService {
                 result.append(line);
             }
 
-            logger.info("Successful read, server response was " + connection.getResponseCode());
-            logger.info("Response: " + result);
             return result.toString();
-
-        } catch (IOException e) {
-            logger.error("Request failed:", e);
-            throw e;
         }
     }
 }

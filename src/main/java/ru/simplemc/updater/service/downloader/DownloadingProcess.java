@@ -60,7 +60,7 @@ public class DownloadingProcess {
 
             while (true) {
 
-                Updater.getHttpService().getLogger().info("Retry downloading file: " + file.getUrl());
+                Updater.getLogger().info("Retry downloading file: " + file.getUrl());
 
                 try {
                     downloadFile(true);
@@ -108,7 +108,7 @@ public class DownloadingProcess {
             throw e;
         }
 
-        Updater.getHttpService().getLogger().info("Connection closed.");
+        Updater.getLogger().info("Connection closed.");
 
         if (!Files.exists(file.getPath()) || Files.size(file.getPath()) < file.getSize()) {
             throw new DownloadNotCompleteException();
