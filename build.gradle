@@ -9,7 +9,7 @@ repositories {
     mavenCentral()
 }
 
-archivesBaseName = 'SimpleMinecraft'
+archivesBaseName = 'simpleminecraft'
 group = 'ru.simplemc'
 version = '1.0'
 mainClassName = 'ru.simplemc.updater.Updater'
@@ -22,10 +22,10 @@ dependencies {
     compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.17.2'
     compile group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.17.2'
     compile group: 'org.rauschig', name: 'jarchivelib', version: '1.0.0'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.2.2'
     implementation group: 'com.github.oshi', name: 'oshi-core', version: '5.7.1'
-    compileOnly 'org.projectlombok:lombok:1.18.22'
-    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
 }
 
 tasks.withType(JavaCompile) {
@@ -52,7 +52,7 @@ launch4j {
     mainClassName = mainClassName
     icon = "${projectDir}/icon.ico"
     jar = shadowJar.archivePath
-    errTitle = 'SimpleMinecraft.Ru'
+    errTitle = 'SIMPLEMINECRAFT'
     supportUrl = 'https://f.simpleminecraft.ru/'
     language = 'RUSSIAN'
     // Don't use 'Installer' and 'Updater' keywords here - exe will be created with required admin rights =|
@@ -64,5 +64,5 @@ launch4j {
 }
 
 // Task dependency
-tasks.createExe.dependsOn tasks.shadowJar
-tasks.build.dependsOn tasks.shadowJar, tasks.createExe
+//tasks.createExe.dependsOn tasks.shadowJar
+tasks.build.dependsOn tasks.shadowJar//, tasks.createExe
